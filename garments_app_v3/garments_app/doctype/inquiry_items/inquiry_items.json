@@ -1,0 +1,70 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-04-17 20:00:27.524469",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "quality",
+  "pg_material",
+  "fibre_blend",
+  "weight",
+  "uom",
+  "rate",
+  "amount"
+ ],
+ "fields": [
+  {
+   "fieldname": "quality",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Fabric",
+   "options": "Fabric Type"
+  },
+  {
+   "fieldname": "pg_material",
+   "fieldtype": "Data",
+   "label": "PG Material"
+  },
+  {
+   "fieldname": "fibre_blend",
+   "fieldtype": "Data",
+   "label": "Fibre Blend"
+  },
+  {
+   "fieldname": "weight",
+   "fieldtype": "Float",
+   "label": "Weight"
+  },
+  {
+   "fieldname": "uom",
+   "fieldtype": "Link",
+   "label": "UOM",
+   "options": "UOM"
+  },
+  {
+   "fieldname": "rate",
+   "fieldtype": "Currency",
+   "label": "Rate"
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "label": "Amount"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-04-23 19:54:59.032386",
+ "modified_by": "Administrator",
+ "module": "Garments App",
+ "name": "Inquiry Items",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

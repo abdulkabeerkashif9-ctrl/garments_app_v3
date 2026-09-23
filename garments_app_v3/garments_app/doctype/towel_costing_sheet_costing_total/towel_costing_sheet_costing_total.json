@@ -1,0 +1,105 @@
+{
+ "actions": [],
+ "creation": "2026-09-15 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "finish_item",
+  "yarn_rate",
+  "dyeing_charges",
+  "weaving_charges",
+  "column_break_1",
+  "wastage_amount",
+  "wastage_total_percent",
+  "stitching_charges",
+  "trims_charges",
+  "total_cost"
+ ],
+ "fields": [
+  {
+   "fieldname": "finish_item",
+   "fieldtype": "Link",
+   "label": "Finish Item",
+   "options": "Item",
+   "in_list_view": 1,
+   "description": "Manual entry - pick the same Finish Item used in the Finish Item table above."
+  },
+  {
+   "fieldname": "yarn_rate",
+   "fieldtype": "Currency",
+   "label": "Yarn Rate",
+   "read_only": 1,
+   "in_list_view": 1,
+   "description": "= sum of the Raw Materials table's Cost for rows whose Article matches this row's Finish Item. Judgment call - flag if you meant something else by Yarn Rate."
+  },
+  {
+   "fieldname": "dyeing_charges",
+   "fieldtype": "Currency",
+   "label": "Dyeing Charges",
+   "in_list_view": 1,
+   "description": "Manual entry."
+  },
+  {
+   "fieldname": "weaving_charges",
+   "fieldtype": "Currency",
+   "label": "Weaving Charges",
+   "in_list_view": 1,
+   "description": "Manual entry."
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "wastage_amount",
+   "fieldtype": "Currency",
+   "label": "Wastage Amount",
+   "read_only": 1,
+   "in_list_view": 1,
+   "description": "= Yarn Rate x Wastage Total Percent / 100. Judgment call - flag if you meant a different base."
+  },
+  {
+   "fieldname": "wastage_total_percent",
+   "fieldtype": "Percent",
+   "label": "Wastage Total Percent",
+   "read_only": 1,
+   "description": "= this Finish Item's Dyeing Wastage % + Weaving Wastage % (from the Finish Item table above)."
+  },
+  {
+   "fieldname": "stitching_charges",
+   "fieldtype": "Currency",
+   "label": "Stitching Charges",
+   "in_list_view": 1,
+   "description": "Manual entry."
+  },
+  {
+   "fieldname": "trims_charges",
+   "fieldtype": "Currency",
+   "label": "Trims Charges",
+   "read_only": 1,
+   "in_list_view": 1,
+   "description": "= sum of the new Trims table's Amount for rows whose Finish Item matches this row."
+  },
+  {
+   "fieldname": "total_cost",
+   "fieldtype": "Currency",
+   "label": "Total Cost",
+   "read_only": 1,
+   "in_list_view": 1,
+   "description": "= Yarn Rate + Dyeing Charges + Weaving Charges + Wastage Amount + Stitching Charges + Trims Charges."
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-09-15 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Garments App",
+ "name": "Towel Costing Sheet Costing Total",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

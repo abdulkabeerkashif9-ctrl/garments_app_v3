@@ -1,0 +1,112 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-05-17 15:44:21.721865",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "component",
+  "length",
+  "width",
+  "length_mtr",
+  "required_width",
+  "product_size_width",
+  "product_size_length",
+  "per_pcs_width",
+  "per_pcs_length",
+  "required_pcs",
+  "required_fabric"
+ ],
+ "fields": [
+  {
+   "fieldname": "component",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Component",
+   "options": "\nFabric-1\nFabric-2\nFabric-3\nFabric-4"
+  },
+  {
+   "fieldname": "length",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Length"
+  },
+  {
+   "fieldname": "width",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Width"
+  },
+  {
+   "default": "0",
+   "description": "Length / 39.36",
+   "fieldname": "length_mtr",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Length MTR",
+   "read_only": 1
+  },
+  {
+   "fieldname": "required_width",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Required Width"
+  },
+  {
+   "fieldname": "product_size_width",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Product Size width"
+  },
+  {
+   "fieldname": "product_size_length",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Product Size Length"
+  },
+  {
+   "default": "0",
+   "description": "Required Width / Product Size Width ",
+   "fieldname": "per_pcs_width",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Per Pcs Width",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "description": "Product Size Length / 39.37",
+   "fieldname": "per_pcs_length",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Per Pcs Length",
+   "read_only": 1
+  },
+  {
+   "fieldname": "required_pcs",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Required Pcs"
+  },
+  {
+   "description": "Per Pcs Length  *  Required Pcs",
+   "fieldname": "required_fabric",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Required Fabric"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-02-12 20:41:00.624255",
+ "modified_by": "Administrator",
+ "module": "Garments App",
+ "name": "Fabric Calculations Woven",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -1,0 +1,874 @@
+{
+ "actions": [],
+ "autoname": "CSW-.DD.-.MM.-.YYYY.-.####",
+ "creation": "2024-05-17 15:52:21.204683",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "inquiry_id",
+  "buyer_name",
+  "inquiry_date",
+  "column_break_4",
+  "agent",
+  "country",
+  "order_qty",
+  "column_break_7",
+  "city",
+  "buyer_address",
+  "column_break_10",
+  "article_detail_section",
+  "article_no",
+  "style",
+  "column_break_9hyfb",
+  "product",
+  "product_name",
+  "column_break_okdx6",
+  "product_description",
+  "column_break_ylblt",
+  "season",
+  "pdm_key",
+  "size_range",
+  "fabric_calculation_section",
+  "fabric_calculations_woven",
+  "section_break_z3w81",
+  "total_fabric_1",
+  "column_break_ul5vq",
+  "total_fabric_2",
+  "column_break_v0znu",
+  "total_fabric_3",
+  "column_break_lkhmf",
+  "total_fabric_4",
+  "column_break_gfnw1",
+  "gross_weight",
+  "column_break_exeqh",
+  "gross_weight_per_piece",
+  "fabric_details_section",
+  "job_costing_fabric",
+  "section_break_rvoer",
+  "fabrics_total",
+  "column_break_vxo8o",
+  "fabric_cost_per_piece",
+  "trims_and_accessories_details_section",
+  "accessories",
+  "accessories_total",
+  "knitting_and_dyeing_section",
+  "knitting_charges_per_kg",
+  "column_break_vt1zf",
+  "knitting_charges_per_piece",
+  "column_break_rlb7g",
+  "dyeing_charges_per_kg",
+  "column_break_uqogj",
+  "dyeing_charges_per_piece",
+  "column_break_nkolf",
+  "printing_charges_per_kg",
+  "column_break_i6dzg",
+  "printing_charges_per_piece",
+  "cmt_charges_section",
+  "process_items",
+  "total_process_amount",
+  "other_expenses_section",
+  "other_expenses",
+  "financial_charges",
+  "testing",
+  "column_break_18",
+  "fob_shipment_handling_charges",
+  "self_courier",
+  "third_party_inspection_charges",
+  "column_break_22",
+  "metal_trims_import_cost",
+  "paper_trims_import_cost",
+  "column_break_26",
+  "misc_charges",
+  "total",
+  "section_break_29",
+  "fabric_cost",
+  "total_fabric_cost",
+  "cm_cost",
+  "trims_and_accessories_cost",
+  "net_making_cost",
+  "column_break_38",
+  "wastage",
+  "wastage_amount",
+  "total_net_making_cost",
+  "commission",
+  "commission_amount",
+  "column_break_43",
+  "profit",
+  "profit_amount",
+  "currency",
+  "exchange_rate",
+  "difference",
+  "column_break_48",
+  "quoted",
+  "target",
+  "confirmed_price",
+  "total_gross_making_per_piece_cost_pkr",
+  "total_gross_making_per_piece_cost_in_usd",
+  "totals_section",
+  "total_qty",
+  "total_gross_making_cost",
+  "total_gross_making_cost_in_usd",
+  "column_break_52",
+  "total_invoice_amount_in_pkr",
+  "total_invoice_amount",
+  "column_break_54",
+  "total_profit_in_pkr",
+  "total_profit",
+  "section_break_77",
+  "raw_material_cost",
+  "column_break_79",
+  "total_raw_material_required",
+  "column_break_81",
+  "grand_total_raw_material",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "inquiry_id",
+   "fieldtype": "Data",
+   "label": "Inquiry Id",
+   "set_only_once": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "buyer_name",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Buyer Name",
+   "options": "Customer",
+   "reqd": 1
+  },
+  {
+   "default": "Today",
+   "fieldname": "inquiry_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Inquiry Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "agent",
+   "fieldtype": "Link",
+   "label": "Agent",
+   "options": "Sales Partner"
+  },
+  {
+   "fetch_from": "buyer_name.country",
+   "fieldname": "country",
+   "fieldtype": "Data",
+   "label": "Country"
+  },
+  {
+   "default": "0",
+   "fieldname": "order_qty",
+   "fieldtype": "Float",
+   "label": "Order Qty",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_7",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "city",
+   "fieldtype": "Data",
+   "label": "City"
+  },
+  {
+   "fetch_from": "buyer_name.address",
+   "fieldname": "buyer_address",
+   "fieldtype": "Small Text",
+   "label": "Buyer Address"
+  },
+  {
+   "fieldname": "column_break_10",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "article_detail_section",
+   "fieldtype": "Section Break",
+   "label": "Article Detail"
+  },
+  {
+   "fieldname": "article_no",
+   "fieldtype": "Data",
+   "label": "Article No"
+  },
+  {
+   "fieldname": "style",
+   "fieldtype": "Link",
+   "label": "Style",
+   "options": "Style"
+  },
+  {
+   "fieldname": "column_break_9hyfb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "product",
+   "fieldtype": "Select",
+   "label": "Product",
+   "options": "\nkids\nTrouser\nJeans"
+  },
+  {
+   "fieldname": "product_name",
+   "fieldtype": "Data",
+   "label": "Product Name"
+  },
+  {
+   "fieldname": "column_break_okdx6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "product_description",
+   "fieldtype": "Small Text",
+   "label": "Product Description"
+  },
+  {
+   "fieldname": "column_break_ylblt",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "season",
+   "fieldtype": "Data",
+   "label": "Season"
+  },
+  {
+   "fieldname": "pdm_key",
+   "fieldtype": "Data",
+   "label": "PDM Key"
+  },
+  {
+   "fieldname": "size_range",
+   "fieldtype": "Link",
+   "label": "Size Range",
+   "options": "Size"
+  },
+  {
+   "fieldname": "fabric_calculation_section",
+   "fieldtype": "Section Break",
+   "label": "Fabric Calculation"
+  },
+  {
+   "fieldname": "fabric_calculations_woven",
+   "fieldtype": "Table",
+   "label": "Fabric Calculations Woven",
+   "options": "Fabric Calculations Woven"
+  },
+  {
+   "fieldname": "section_break_z3w81",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_fabric_1",
+   "fieldtype": "Data",
+   "label": "Tot. Fabric-1",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_ul5vq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_fabric_2",
+   "fieldtype": "Data",
+   "label": "Tot. Fabric-2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_v0znu",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_fabric_3",
+   "fieldtype": "Data",
+   "label": "Tot. Fabric-3",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_lkhmf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_fabric_4",
+   "fieldtype": "Data",
+   "label": "Tot. Fabric-4",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_gfnw1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "gross_weight",
+   "fieldtype": "Data",
+   "label": "Gross Weight",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_exeqh",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "gross_weight_per_piece",
+   "fieldtype": "Data",
+   "label": "Gross wt/DZN",
+   "read_only": 1
+  },
+  {
+   "fieldname": "fabric_details_section",
+   "fieldtype": "Section Break",
+   "label": "Yarn Details"
+  },
+  {
+   "fieldname": "job_costing_fabric",
+   "fieldtype": "Table",
+   "label": "Job Costing Fabric",
+   "options": "Job Costing Fabric"
+  },
+  {
+   "fieldname": "section_break_rvoer",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "fabrics_total",
+   "fieldtype": "Currency",
+   "label": "Fabrics Total",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_vxo8o",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "fabric_cost_per_piece",
+   "fieldtype": "Data",
+   "label": "Fabric Cost/DZN",
+   "read_only": 1
+  },
+  {
+   "fieldname": "trims_and_accessories_details_section",
+   "fieldtype": "Section Break",
+   "label": "Trims and Accessories Details"
+  },
+  {
+   "fieldname": "accessories",
+   "fieldtype": "Table",
+   "label": "Accessories",
+   "options": "Job Costing Accessory"
+  },
+  {
+   "default": "0",
+   "fieldname": "accessories_total",
+   "fieldtype": "Currency",
+   "label": "Accessories Total",
+   "read_only": 1
+  },
+  {
+   "fieldname": "knitting_and_dyeing_section",
+   "fieldtype": "Section Break",
+   "label": "Knitting And Dyeing"
+  },
+  {
+   "fieldname": "knitting_charges_per_kg",
+   "fieldtype": "Data",
+   "label": "Knitting Charges / Kg"
+  },
+  {
+   "fieldname": "column_break_vt1zf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "knitting_charges_per_piece",
+   "fieldtype": "Data",
+   "label": "Knitting Charges / Pcs ",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_rlb7g",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "dyeing_charges_per_kg",
+   "fieldtype": "Data",
+   "label": "Dyeing Charges / Kg"
+  },
+  {
+   "fieldname": "column_break_uqogj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "dyeing_charges_per_piece",
+   "fieldtype": "Data",
+   "label": "Dyeing Charges / Pcs ",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_nkolf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "printing_charges_per_kg",
+   "fieldtype": "Data",
+   "label": "Printing Charges / Kg"
+  },
+  {
+   "fieldname": "column_break_i6dzg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "printing_charges_per_piece",
+   "fieldtype": "Data",
+   "label": "Printing Charges / Pcs",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cmt_charges_section",
+   "fieldtype": "Section Break",
+   "label": "CMT Charges/Pcs"
+  },
+  {
+   "fieldname": "process_items",
+   "fieldtype": "Table",
+   "label": "Process Items",
+   "options": "Process Items"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_process_amount",
+   "fieldtype": "Data",
+   "label": "Total Process Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "other_expenses_section",
+   "fieldtype": "Section Break",
+   "label": "Other Expenses"
+  },
+  {
+   "default": "0",
+   "fieldname": "other_expenses",
+   "fieldtype": "Currency",
+   "label": "Other Expenses"
+  },
+  {
+   "default": "0",
+   "fieldname": "financial_charges",
+   "fieldtype": "Currency",
+   "label": "Financial Charges"
+  },
+  {
+   "default": "0",
+   "fieldname": "testing",
+   "fieldtype": "Currency",
+   "label": "Testing"
+  },
+  {
+   "fieldname": "column_break_18",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "fob_shipment_handling_charges",
+   "fieldtype": "Currency",
+   "label": "FOB Shipment Handling Charges"
+  },
+  {
+   "default": "0",
+   "fieldname": "self_courier",
+   "fieldtype": "Currency",
+   "label": "Self Courier"
+  },
+  {
+   "default": "0",
+   "fieldname": "third_party_inspection_charges",
+   "fieldtype": "Currency",
+   "label": "3rd Party Inspection Charges"
+  },
+  {
+   "fieldname": "column_break_22",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "metal_trims_import_cost",
+   "fieldtype": "Currency",
+   "label": "Metal Trims Import Cost"
+  },
+  {
+   "default": "0",
+   "fieldname": "paper_trims_import_cost",
+   "fieldtype": "Currency",
+   "label": "Paper Trims Import Cost"
+  },
+  {
+   "fieldname": "column_break_26",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "misc_charges",
+   "fieldtype": "Currency",
+   "label": "Misc Charges"
+  },
+  {
+   "default": "0",
+   "fieldname": "total",
+   "fieldtype": "Currency",
+   "label": "Total",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_29",
+   "fieldtype": "Section Break",
+   "label": "Total Costs"
+  },
+  {
+   "default": "0",
+   "fieldname": "fabric_cost",
+   "fieldtype": "Currency",
+   "label": "Fabric Cost",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "description": "Fabric  + Knitting + Dyeing + Printing",
+   "fieldname": "total_fabric_cost",
+   "fieldtype": "Data",
+   "label": "Total Fabric Cost",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "cm_cost",
+   "fieldtype": "Currency",
+   "label": "CM Cost",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "trims_and_accessories_cost",
+   "fieldtype": "Currency",
+   "label": "Trims and Accessories Cost",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "net_making_cost",
+   "fieldtype": "Currency",
+   "label": "Net Making Cost",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_38",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "wastage",
+   "fieldtype": "Percent",
+   "label": "Wastage %"
+  },
+  {
+   "default": "0",
+   "fieldname": "wastage_amount",
+   "fieldtype": "Currency",
+   "label": "Wastage Amount",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "total_net_making_cost",
+   "fieldtype": "Currency",
+   "label": "Total Net Making Cost",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "commission",
+   "fieldtype": "Percent",
+   "label": "Commission %"
+  },
+  {
+   "default": "0",
+   "fieldname": "commission_amount",
+   "fieldtype": "Currency",
+   "label": "Commission Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_43",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "profit",
+   "fieldtype": "Percent",
+   "label": "Profit %"
+  },
+  {
+   "default": "0",
+   "fieldname": "profit_amount",
+   "fieldtype": "Currency",
+   "label": "Profit Amount",
+   "read_only": 1
+  },
+  {
+   "default": "USD",
+   "fieldname": "currency",
+   "fieldtype": "Select",
+   "label": "Currency",
+   "options": "USD\nPKR"
+  },
+  {
+   "default": "0",
+   "fieldname": "exchange_rate",
+   "fieldtype": "Float",
+   "label": "Exchange Rate"
+  },
+  {
+   "default": "0",
+   "fieldname": "difference",
+   "fieldtype": "Currency",
+   "label": "+/-",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_48",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "quoted",
+   "fieldtype": "Currency",
+   "label": "Quoted",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "target",
+   "fieldtype": "Currency",
+   "label": "Target"
+  },
+  {
+   "default": "0",
+   "fieldname": "confirmed_price",
+   "fieldtype": "Currency",
+   "label": "Confirmed Price",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_gross_making_per_piece_cost_pkr",
+   "fieldtype": "Float",
+   "label": "Total Gross Making Per Piece Cost PKR",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_gross_making_per_piece_cost_in_usd",
+   "fieldtype": "Float",
+   "label": "Total Gross Making Per Piece Cost USD",
+   "read_only": 1
+  },
+  {
+   "fieldname": "totals_section",
+   "fieldtype": "Section Break",
+   "label": "Totals"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_qty",
+   "fieldtype": "Float",
+   "label": "Total Qty"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_gross_making_cost",
+   "fieldtype": "Float",
+   "label": "Total Gross Making Cost PKR",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "total_gross_making_cost_in_usd",
+   "fieldtype": "Float",
+   "label": "Total Gross Making Cost in USD",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_52",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_invoice_amount_in_pkr",
+   "fieldtype": "Float",
+   "label": "Total Sales Invoice Amount in PKR",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "total_invoice_amount",
+   "fieldtype": "Float",
+   "label": "Total Sales Invoice Amount in USD",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_54",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_profit_in_pkr",
+   "fieldtype": "Float",
+   "label": "Total Profit in PKR",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "total_profit",
+   "fieldtype": "Float",
+   "label": "Total Profit in USD",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_77",
+   "fieldtype": "Section Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "0",
+   "fieldname": "raw_material_cost",
+   "fieldtype": "Currency",
+   "label": "Raw Material Cost",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_79",
+   "fieldtype": "Column Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "0",
+   "fieldname": "total_raw_material_required",
+   "fieldtype": "Currency",
+   "label": "Total Raw Material Required",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_81",
+   "fieldtype": "Column Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "0",
+   "fieldname": "grand_total_raw_material",
+   "fieldtype": "Currency",
+   "label": "Grand Total Raw Material Cost + Leverage (3%)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Cost Sheet Woven",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Cost Sheet Woven",
+   "print_hide": 1,
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [
+  {
+   "link_doctype": "Purchase Order",
+   "link_fieldname": "job_costing"
+  },
+  {
+   "link_doctype": "Denim and Knitting Production Order",
+   "link_fieldname": "job_costing"
+  },
+  {
+   "link_doctype": "Denim Operation",
+   "link_fieldname": "job_costing"
+  }
+ ],
+ "modified": "2024-05-17 15:52:52.649156",
+ "modified_by": "Administrator",
+ "module": "Garments App",
+ "name": "Cost Sheet Woven",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Purchase Master Manager",
+   "share": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Manufacturing Manager",
+   "share": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

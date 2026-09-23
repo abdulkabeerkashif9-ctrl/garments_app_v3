@@ -1,0 +1,16 @@
+{
+ "custom_fields": [
+  {
+   "fieldname": "custom_dyeing_wastage_percent",
+   "fieldtype": "Float",
+   "label": "Dyeing Wastage %",
+   "insert_after": "dyeing_charges_per_lbs",
+   "dt": "Finish Item Towel Costing"
+  }
+ ],
+ "custom_perms": [],
+ "doctype": "Finish Item Towel Costing",
+ "links": [],
+ "property_setters": [],
+ "sync_on_migrate": 1
+}

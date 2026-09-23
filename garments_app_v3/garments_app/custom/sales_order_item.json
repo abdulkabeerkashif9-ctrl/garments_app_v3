@@ -1,0 +1,98 @@
+{
+ "custom_fields": [
+  {
+   "fieldname": "custom_b_qty_percent",
+   "fieldtype": "Float",
+   "label": "B Qty %",
+   "insert_after": "qty",
+   "dt": "Sales Order Item",
+   "description": "Entered as a percentage of A Qty (not an absolute quantity) - e.g. 10 means AB Qty = A Qty x 1.10."
+  },
+  {
+   "fieldname": "custom_ab_qty",
+   "fieldtype": "Float",
+   "label": "AB Qty",
+   "insert_after": "custom_b_qty_percent",
+   "dt": "Sales Order Item",
+   "read_only": 1,
+   "no_copy": 1,
+   "description": "= A Qty x (1 + B Qty% / 100). Recalculated on save."
+  },
+  {
+   "fieldname": "custom_color",
+   "fieldtype": "Link",
+   "label": "Color",
+   "options": "Color",
+   "insert_after": "custom_ab_qty",
+   "dt": "Sales Order Item"
+  },
+  {
+   "fieldname": "custom_batch",
+   "fieldtype": "Link",
+   "label": "Batch",
+   "options": "Batch",
+   "insert_after": "custom_color",
+   "dt": "Sales Order Item",
+   "read_only": 1,
+   "no_copy": 1,
+   "description": "Auto-created on Sales Order submit: one Batch per (Item, Color)."
+  },
+  {
+   "fieldname": "custom_greige_batch",
+   "fieldtype": "Link",
+   "label": "Greige Batch",
+   "options": "Batch",
+   "insert_after": "custom_batch",
+   "dt": "Sales Order Item",
+   "read_only": 1,
+   "no_copy": 1,
+   "description": "Auto-created on Sales Order submit: one shared Batch per Item (same across every row/color for that Item), used for Weaving Receipt, Dyeing Contract fabric issue, and Dyeing Receipt repack."
+  },
+  {
+   "fieldname": "custom_pcs_per_pack",
+   "fieldtype": "Float",
+   "label": "Pcs per Pack",
+   "insert_after": "custom_greige_batch",
+   "dt": "Sales Order Item"
+  },
+  {
+   "fieldname": "custom_pack_per_ctn",
+   "fieldtype": "Float",
+   "label": "Pack Per Ctn",
+   "insert_after": "custom_pcs_per_pack",
+   "dt": "Sales Order Item"
+  },
+  {
+   "fieldname": "custom_total_ctn",
+   "fieldtype": "Float",
+   "label": "Total Ctn",
+   "insert_after": "custom_pack_per_ctn",
+   "dt": "Sales Order Item",
+   "read_only": 1,
+   "no_copy": 1,
+   "description": "= Pcs per Pack x Pack Per Ctn, per your formula. Recalculated on save."
+  },
+  {
+   "fieldname": "custom_set",
+   "fieldtype": "Select",
+   "label": "Set",
+   "options": "\nSet 1\nSet 2\nSet 3\nSet 4\nSet 5\nSet 6\nSet 7\nSet 8\nSet 9\nSet 10",
+   "insert_after": "custom_total_ctn",
+   "dt": "Sales Order Item"
+  }
+ ],
+ "custom_perms": [],
+ "doctype": "Sales Order Item",
+ "links": [],
+ "property_setters": [
+  {
+   "doctype_or_field": "DocField",
+   "doc_type": "Sales Order Item",
+   "field_name": "qty",
+   "property": "label",
+   "property_type": "Data",
+   "value": "A Qty"
+  }
+ ],
+ "sync_on_migrate": 1
+}

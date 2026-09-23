@@ -1,0 +1,155 @@
+{
+ "actions": [],
+ "creation": "2021-12-11 17:37:26.027730",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "item_code",
+  "item_name",
+  "yarn_item",
+  "ratio",
+  "uom",
+  "qty",
+  "rate",
+  "amount",
+  "rate_lbs",
+  "pcs",
+  "fabric_kg",
+  "bags",
+  "yarn_qty",
+  "part",
+  "color"
+ ],
+ "fields": [
+  {
+   "columns": 2,
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Fabric Item",
+   "options": "Item",
+   "reqd": 1
+  },
+  {
+   "columns": 3,
+   "fetch_from": "item_code.item_name",
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Item Name"
+  },
+  {
+   "columns": 1,
+   "default": "1",
+   "fieldname": "qty",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Gross",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "columns": 1,
+   "default": "0",
+   "fieldname": "rate",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Rate(KG)",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Amount",
+   "read_only": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "uom",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "UOM",
+   "options": "UOM",
+   "reqd": 1
+  },
+  {
+   "fieldname": "ratio",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Ratio"
+  },
+  {
+   "fieldname": "rate_lbs",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Rate(LBS)"
+  },
+  {
+   "fieldname": "pcs",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Pcs"
+  },
+  {
+   "default": "0",
+   "fieldname": "fabric_kg",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Fabric Kg",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "bags",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Bags",
+   "read_only": 1
+  },
+  {
+   "fieldname": "yarn_item",
+   "fieldtype": "Link",
+   "label": "Yarn Item",
+   "options": "Item",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "yarn_qty",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Yarn Qty",
+   "precision": "4",
+   "read_only": 1
+  },
+  {
+   "fieldname": "part",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Part",
+   "options": "Part"
+  },
+  {
+   "fieldname": "color",
+   "fieldtype": "Link",
+   "label": "Color",
+   "options": "Color"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-07-06 16:38:18.434839",
+ "modified_by": "Administrator",
+ "module": "Garments App",
+ "name": "Job Costing Fabric",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

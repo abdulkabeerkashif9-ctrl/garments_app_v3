@@ -1,0 +1,88 @@
+{
+ "actions": [],
+ "creation": "2026-09-15 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "finish_item",
+  "item_group",
+  "item_code",
+  "column_break_1",
+  "consumption_unit",
+  "consumed_qty",
+  "rate",
+  "amount"
+ ],
+ "fields": [
+  {
+   "fieldname": "finish_item",
+   "fieldtype": "Link",
+   "label": "Finish Item",
+   "options": "Item",
+   "in_list_view": 1,
+   "description": "Pick the same Finish Item used in the Finish Item table above. Not restricted to that table's rows yet - flagged as a follow-up (needs the parent Towel Costing Sheet's own client script to wire a live filter)."
+  },
+  {
+   "fieldname": "item_group",
+   "fieldtype": "Link",
+   "label": "Item Group",
+   "options": "Item Group",
+   "read_only": 1,
+   "fetch_from": "item_code.item_group"
+  },
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "label": "Item Code",
+   "options": "Item",
+   "in_list_view": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "consumption_unit",
+   "fieldtype": "Select",
+   "label": "Consumption Unit",
+   "options": "Per Pcs\nPer Pack\nPer Ctn",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "consumed_qty",
+   "fieldtype": "Float",
+   "label": "Consumed Qty",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "rate",
+   "fieldtype": "Currency",
+   "label": "Rate",
+   "read_only": 1,
+   "in_list_view": 1,
+   "description": "Fetched from that Item's most recently dated Item Price when Item Code is set - not filtered to a specific Price List."
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "label": "Amount",
+   "read_only": 1,
+   "in_list_view": 1,
+   "description": "= Consumed Qty x Rate. Not in your original field list - added to support the Costing Total table's Trims Charges rollup. Flag if you'd rather compute that differently."
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-09-15 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Garments App",
+ "name": "Towel Costing Sheet Trim",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

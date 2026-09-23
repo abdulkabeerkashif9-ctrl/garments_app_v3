@@ -1,0 +1,113 @@
+{
+ "actions": [],
+ "creation": "2026-09-08 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "article",
+  "uom",
+  "finish_weight",
+  "dyeing_wastage_percent",
+  "weaving_wastage_percet",
+  "greige_weight",
+  "greige_weight_grams",
+  "weaving_charges_per_lbs",
+  "dyeing_charges_per_lbs",
+  "stitching_and_packing_charges_per_lbs",
+  "trims_charges"
+ ],
+ "fields": [
+  {
+   "fieldname": "article",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Article",
+   "options": "Item"
+  },
+  {
+   "fieldname": "uom",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "UOM",
+   "options": "LBS/Dozen\nGram"
+  },
+  {
+   "default": "0",
+   "fieldname": "finish_weight",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Finish Weight"
+  },
+  {
+   "default": "0",
+   "fieldname": "dyeing_wastage_percent",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Dyeing Wastage Percent"
+  },
+  {
+   "default": "0",
+   "fieldname": "weaving_wastage_percet",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Weaving Wastage Percent"
+  },
+  {
+   "default": "0",
+   "fieldname": "greige_weight",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Greige Weight",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "greige_weight_grams",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Greige Weight (Grams)",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "weaving_charges_per_lbs",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Weaving Charges Per Lbs"
+  },
+  {
+   "default": "0",
+   "fieldname": "dyeing_charges_per_lbs",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Dyeing Charges Per Lbs"
+  },
+  {
+   "default": "0",
+   "fieldname": "stitching_and_packing_charges_per_lbs",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Stitching and Packing Charges Per Lbs"
+  },
+  {
+   "default": "0",
+   "fieldname": "trims_charges",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Trims Charges"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-09-08 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Garments App",
+ "name": "Finish Item Towel Costing",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

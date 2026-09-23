@@ -1,0 +1,185 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-04-28 19:42:33.914416",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "item_code",
+  "gsm",
+  "constant",
+  "body_length",
+  "chestbust",
+  "body_gross",
+  "sleeve_length",
+  "column_break_fgkqr",
+  "sleeve_width",
+  "sleeve_gross",
+  "total_body_gross",
+  "wastage_percentage",
+  "wastage",
+  "sheet_length",
+  "column_break_q4tni",
+  "sheet_width",
+  "drop",
+  "part",
+  "color",
+  "dyed_fabric",
+  "gross_dzn"
+ ],
+ "fields": [
+  {
+   "fieldname": "gsm",
+   "fieldtype": "Float",
+   "hidden": 1,
+   "in_list_view": 1,
+   "label": "GSM"
+  },
+  {
+   "default": "1550",
+   "fieldname": "constant",
+   "fieldtype": "Float",
+   "hidden": 1,
+   "in_list_view": 1,
+   "label": "Constant"
+  },
+  {
+   "fieldname": "body_length",
+   "fieldtype": "Float",
+   "hidden": 1,
+   "in_list_view": 1,
+   "label": "Length-1"
+  },
+  {
+   "fieldname": "chestbust",
+   "fieldtype": "Float",
+   "hidden": 1,
+   "in_list_view": 1,
+   "label": "Width"
+  },
+  {
+   "default": "0",
+   "fieldname": "body_gross",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Body Gross",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sleeve_length",
+   "fieldtype": "Float",
+   "hidden": 1,
+   "in_list_view": 1,
+   "label": "Length-2"
+  },
+  {
+   "default": "0",
+   "fieldname": "sleeve_gross",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Sleeve Gross",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_body_gross",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Total Body Gross",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sleeve_width",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Sleeve Width"
+  },
+  {
+   "fieldname": "wastage_percentage",
+   "fieldtype": "Percent",
+   "in_list_view": 1,
+   "label": "Wastage %"
+  },
+  {
+   "default": "0",
+   "fieldname": "wastage",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Wastage",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sheet_length",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Sheet Length"
+  },
+  {
+   "fieldname": "sheet_width",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Sheet Width"
+  },
+  {
+   "fieldname": "drop",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Drop"
+  },
+  {
+   "fieldname": "part",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Part",
+   "options": "Part"
+  },
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "label": "Fabric Item",
+   "options": "Item"
+  },
+  {
+   "fieldname": "color",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Color",
+   "options": "Color"
+  },
+  {
+   "fetch_from": "item_code.custom_dyed_fabric",
+   "fieldname": "dyed_fabric",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Dyed Fabric",
+   "options": "Item"
+  },
+  {
+   "fieldname": "gross_dzn",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Gross DZN",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_fgkqr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_q4tni",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-08-10 13:54:42.962634",
+ "modified_by": "Administrator",
+ "module": "Garments App",
+ "name": "Fabric Calculations",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

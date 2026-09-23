@@ -1,0 +1,312 @@
+{
+ "custom_fields": [
+  {
+   "fieldname": "trims_section",
+   "fieldtype": "Section Break",
+   "label": "Consumption / Trims",
+   "insert_after": "finish_item_towel_costing",
+   "dt": "Towel Costing Sheet"
+  },
+  {
+   "fieldname": "trims",
+   "fieldtype": "Table",
+   "label": "Trims / Consumption",
+   "options": "Towel Costing Sheet Trim",
+   "insert_after": "trims_section",
+   "dt": "Towel Costing Sheet"
+  },
+  {
+   "fieldname": "costing_total_section",
+   "fieldtype": "Section Break",
+   "label": "Costing Total",
+   "insert_after": "trims",
+   "dt": "Towel Costing Sheet"
+  },
+  {
+   "fieldname": "costing_total",
+   "fieldtype": "Table",
+   "label": "Costing Total",
+   "options": "Towel Costing Sheet Costing Total",
+   "insert_after": "costing_total_section",
+   "dt": "Towel Costing Sheet"
+  }
+ ],
+ "custom_perms": [],
+ "doctype": "Towel Costing Sheet",
+ "links": [],
+ "property_setters": [
+  {
+   "doctype_or_field": "DocField",
+   "doc_type": "Towel Costing Sheet",
+   "field_name": "qty",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doctype_or_field": "DocField",
+   "doc_type": "Towel Costing Sheet",
+   "field_name": "wastage",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doctype_or_field": "DocField",
+   "doc_type": "Towel Costing Sheet",
+   "field_name": "wastage_cost",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doctype_or_field": "DocField",
+   "doc_type": "Towel Costing Sheet",
+   "field_name": "total_yarn_cost_wastage",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doctype_or_field": "DocField",
+   "doc_type": "Towel Costing Sheet",
+   "field_name": "weaving_oh",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doctype_or_field": "DocField",
+   "doc_type": "Towel Costing Sheet",
+   "field_name": "dyeing",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doctype_or_field": "DocField",
+   "doc_type": "Towel Costing Sheet",
+   "field_name": "dyed_fabric_cost_lbs",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doctype_or_field": "DocField",
+   "doc_type": "Towel Costing Sheet",
+   "field_name": "fc_rskg",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doctype_or_field": "DocField",
+   "doc_type": "Towel Costing Sheet",
+   "field_name": "stitching_cost_per_piece",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doctype_or_field": "DocField",
+   "doc_type": "Towel Costing Sheet",
+   "field_name": "accessories_per_piece",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doctype_or_field": "DocField",
+   "doc_type": "Towel Costing Sheet",
+   "field_name": "clearing_per_piece",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doctype_or_field": "DocField",
+   "doc_type": "Towel Costing Sheet",
+   "field_name": "container_freight_charges_per_piece",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doctype_or_field": "DocField",
+   "doc_type": "Towel Costing Sheet",
+   "field_name": "bank_oh_profit_per_piece",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doctype_or_field": "DocField",
+   "doc_type": "Towel Costing Sheet",
+   "field_name": "exchange_rate_per_piece",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doctype_or_field": "DocField",
+   "doc_type": "Towel Costing Sheet",
+   "field_name": "stitching_cost_per_kg",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doctype_or_field": "DocField",
+   "doc_type": "Towel Costing Sheet",
+   "field_name": "accessories_per_kg",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doctype_or_field": "DocField",
+   "doc_type": "Towel Costing Sheet",
+   "field_name": "container_freight_usd",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doctype_or_field": "DocField",
+   "doc_type": "Towel Costing Sheet",
+   "field_name": "exchange_rate_for_cf",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doctype_or_field": "DocField",
+   "doc_type": "Towel Costing Sheet",
+   "field_name": "clearing_amount",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doctype_or_field": "DocField",
+   "doc_type": "Towel Costing Sheet",
+   "field_name": "towel_cost_with_dyeing_price_per_piece",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doctype_or_field": "DocField",
+   "doc_type": "Towel Costing Sheet",
+   "field_name": "towel_cost_with_dyeing_price_per_kg",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doctype_or_field": "DocField",
+   "doc_type": "Towel Costing Sheet",
+   "field_name": "yarn_cost_total",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doctype_or_field": "DocField",
+   "doc_type": "Towel Costing Sheet",
+   "field_name": "weaving_oh_cost_total",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doctype_or_field": "DocField",
+   "doc_type": "Towel Costing Sheet",
+   "field_name": "dyeing_cost_total",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doctype_or_field": "DocField",
+   "doc_type": "Towel Costing Sheet",
+   "field_name": "stitching_cost_total",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doctype_or_field": "DocField",
+   "doc_type": "Towel Costing Sheet",
+   "field_name": "accessories_cost_total",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doctype_or_field": "DocField",
+   "doc_type": "Towel Costing Sheet",
+   "field_name": "clearing_freight_total",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doctype_or_field": "DocField",
+   "doc_type": "Towel Costing Sheet",
+   "field_name": "grand_total_cost",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doctype_or_field": "DocField",
+   "doc_type": "Towel Costing Sheet",
+   "field_name": "wastage_section",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doctype_or_field": "DocField",
+   "doc_type": "Towel Costing Sheet",
+   "field_name": "cm_cost_section",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doctype_or_field": "DocField",
+   "doc_type": "Towel Costing Sheet",
+   "field_name": "stiching_wastage_section",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doctype_or_field": "DocField",
+   "doc_type": "Towel Costing Sheet",
+   "field_name": "clearing_and_forwarding_charges_section",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doctype_or_field": "DocField",
+   "doc_type": "Towel Costing Sheet",
+   "field_name": "final_cost_section",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doctype_or_field": "DocField",
+   "doc_type": "Towel Costing Sheet",
+   "field_name": "total_cost_sb",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  }
+ ],
+ "sync_on_migrate": 1
+}

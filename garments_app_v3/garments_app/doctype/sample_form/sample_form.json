@@ -1,0 +1,275 @@
+{
+ "actions": [],
+ "autoname": "SF-.DD.-.MM.-.YYYY.-.####",
+ "creation": "2024-05-17 06:56:45.007850",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "inquiry_id",
+  "buyer_name",
+  "inquiry_date",
+  "column_break_4",
+  "agent",
+  "country",
+  "order_qty",
+  "column_break_7",
+  "city",
+  "buyer_address",
+  "column_break_10",
+  "costing_parent",
+  "costing_parenttype",
+  "costing_parentfield",
+  "sample_type",
+  "column_break_uatqe",
+  "article_detail_section",
+  "article_no",
+  "style",
+  "column_break_9hyfb",
+  "product",
+  "product_name",
+  "column_break_okdx6",
+  "product_description",
+  "column_break_ylblt",
+  "season",
+  "pdm_key",
+  "size_range",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "inquiry_id",
+   "fieldtype": "Data",
+   "label": "Inquiry Id",
+   "set_only_once": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "buyer_name",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Buyer Name",
+   "options": "Customer",
+   "reqd": 1
+  },
+  {
+   "default": "Today",
+   "fieldname": "inquiry_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Inquiry Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "agent",
+   "fieldtype": "Link",
+   "label": "Agent",
+   "options": "Sales Partner"
+  },
+  {
+   "fetch_from": "buyer_name.country",
+   "fieldname": "country",
+   "fieldtype": "Data",
+   "label": "Country"
+  },
+  {
+   "default": "0",
+   "fieldname": "order_qty",
+   "fieldtype": "Float",
+   "label": "Order Qty",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_7",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "city",
+   "fieldtype": "Data",
+   "label": "City"
+  },
+  {
+   "fetch_from": "buyer_name.address",
+   "fieldname": "buyer_address",
+   "fieldtype": "Small Text",
+   "label": "Buyer Address"
+  },
+  {
+   "fieldname": "column_break_10",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "article_detail_section",
+   "fieldtype": "Section Break",
+   "label": "Article Detail"
+  },
+  {
+   "fieldname": "article_no",
+   "fieldtype": "Data",
+   "label": "Article No"
+  },
+  {
+   "fieldname": "style",
+   "fieldtype": "Link",
+   "label": "Style",
+   "options": "Style"
+  },
+  {
+   "fieldname": "column_break_9hyfb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "product",
+   "fieldtype": "Select",
+   "label": "Product",
+   "options": "\nkids\nTrouser\nJeans"
+  },
+  {
+   "fieldname": "product_name",
+   "fieldtype": "Data",
+   "label": "Product Name"
+  },
+  {
+   "fieldname": "column_break_okdx6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "product_description",
+   "fieldtype": "Small Text",
+   "label": "Product Description"
+  },
+  {
+   "fieldname": "column_break_ylblt",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "season",
+   "fieldtype": "Data",
+   "label": "Season"
+  },
+  {
+   "fieldname": "pdm_key",
+   "fieldtype": "Data",
+   "label": "PDM Key"
+  },
+  {
+   "fieldname": "size_range",
+   "fieldtype": "Link",
+   "label": "Size Range",
+   "options": "Size"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Sample Form",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_uatqe",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "costing_parent",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Costing Parent"
+  },
+  {
+   "fieldname": "costing_parenttype",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Costing Parenttype"
+  },
+  {
+   "fieldname": "costing_parentfield",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Costing Parentfield"
+  },
+  {
+   "fieldname": "sample_type",
+   "fieldtype": "Select",
+   "label": "Sample Type",
+   "options": "\nProduction Sample\nPre-Production Sample\nFit Sample"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [
+  {
+   "link_doctype": "Purchase Order",
+   "link_fieldname": "job_costing"
+  },
+  {
+   "link_doctype": "Denim and Knitting Production Order",
+   "link_fieldname": "job_costing"
+  },
+  {
+   "link_doctype": "Denim Operation",
+   "link_fieldname": "job_costing"
+  }
+ ],
+ "modified": "2024-05-17 07:14:01.910958",
+ "modified_by": "Administrator",
+ "module": "Garments App",
+ "name": "Sample Form",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Purchase Master Manager",
+   "share": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Manufacturing Manager",
+   "share": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

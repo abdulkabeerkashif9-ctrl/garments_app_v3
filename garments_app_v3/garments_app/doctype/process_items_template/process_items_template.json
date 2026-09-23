@@ -1,0 +1,53 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:{part}-{##}",
+ "creation": "2026-08-13 15:22:21.126776",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "part",
+  "process_template_details"
+ ],
+ "fields": [
+  {
+   "fieldname": "part",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Part",
+   "options": "Part",
+   "reqd": 1
+  },
+  {
+   "fieldname": "process_template_details",
+   "fieldtype": "Table",
+   "label": "Process Template Details",
+   "options": "Process Template Details"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-08-13 15:22:21.126776",
+ "modified_by": "Administrator",
+ "module": "Garments App",
+ "name": "Process Items Template",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

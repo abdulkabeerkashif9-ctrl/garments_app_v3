@@ -1,0 +1,115 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-05-14 21:01:02.269486",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "gsm",
+  "constant",
+  "body_gross",
+  "total_body_gross",
+  "wastage_percentage",
+  "component",
+  "wastage",
+  "sheet_length",
+  "sheet_width",
+  "drop",
+  "fabric_type",
+  "part"
+ ],
+ "fields": [
+  {
+   "fieldname": "gsm",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "GSM"
+  },
+  {
+   "default": "1550",
+   "fieldname": "constant",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Constant"
+  },
+  {
+   "default": "0",
+   "fieldname": "body_gross",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Body Gross",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_body_gross",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Total Body Gross"
+  },
+  {
+   "fieldname": "wastage_percentage",
+   "fieldtype": "Percent",
+   "in_list_view": 1,
+   "label": "Wastage %"
+  },
+  {
+   "fieldname": "component",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Component",
+   "options": "\nFabric-1\nFabric-2\nFabric-3\nFabric-4"
+  },
+  {
+   "default": "0",
+   "fieldname": "wastage",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Wastage",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sheet_length",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Sheet Length"
+  },
+  {
+   "fieldname": "sheet_width",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Sheet Width"
+  },
+  {
+   "fieldname": "drop",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Drop"
+  },
+  {
+   "fieldname": "fabric_type",
+   "fieldtype": "Link",
+   "label": "Fabric",
+   "options": "Fabric Type"
+  },
+  {
+   "fieldname": "part",
+   "fieldtype": "Select",
+   "label": "Part",
+   "options": "\nBedsheet\nPillow"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-05-15 23:49:12.374076",
+ "modified_by": "Administrator",
+ "module": "Garments App",
+ "name": "Fabric Calculations Bedding",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
