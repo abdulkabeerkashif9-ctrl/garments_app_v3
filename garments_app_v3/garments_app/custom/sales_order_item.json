@@ -8,6 +8,15 @@
    "dt": "Sales Order Item",
    "description": "Entered as a percentage of A Qty (not an absolute quantity) - e.g. 10 means AB Qty = A Qty x 1.10."
   },
+ {
+   "fieldname": "custom_towel_costing_sheet",
+   "fieldtype": "Link",
+   "label": "TCS",
+   "insert_after": "qty",
+   "dt": "Sales Order Item",
+   "options": "Towel Costing Sheet"   	
+  },
+
   {
    "fieldname": "custom_ab_qty",
    "fieldtype": "Float",
