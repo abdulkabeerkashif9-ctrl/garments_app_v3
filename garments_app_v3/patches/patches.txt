@@ -1,0 +1,5 @@
+[pre_model_sync]
+garments_app_v3.patches.force_create_v3_custom_fields
+
+[post_model_sync]
+garments_app_v3.patches.recompute_sales_order_total_ctn

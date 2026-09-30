@@ -11,6 +11,12 @@ from frappe.utils import flt
 
 class TowelCostingSheet(Document):
 	def on_update(self):
+		# 2026-09-28 (feature v3) - Master Towel Costing is no longer a
+		# mandatory master field (hidden + optional on the form), so a
+		# sheet can exist without one - nothing to roll this sheet's
+		# width/length/qty up into in that case.
+		if not self.master_towel_costing:
+			return
 		doc = frappe.get_doc("Master Towel Costing", self.master_towel_costing)
 		if not frappe.db.exists("Master Towel Costing Item", {"parent":self.master_towel_costing, "towel_costing_sheet":self.name}):
 			doc.append("items", {

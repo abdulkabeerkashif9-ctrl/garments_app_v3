@@ -8,15 +8,6 @@
    "dt": "Sales Order Item",
    "description": "Entered as a percentage of A Qty (not an absolute quantity) - e.g. 10 means AB Qty = A Qty x 1.10."
   },
- {
-   "fieldname": "custom_towel_costing_sheet",
-   "fieldtype": "Link",
-   "label": "TCS",
-   "insert_after": "qty",
-   "dt": "Sales Order Item",
-   "options": "Towel Costing Sheet"   	
-  },
-
   {
    "fieldname": "custom_ab_qty",
    "fieldtype": "Float",
@@ -65,10 +56,20 @@
    "dt": "Sales Order Item"
   },
   {
+   "fieldname": "custom_total_packs",
+   "fieldtype": "Float",
+   "label": "Total Packs",
+   "insert_after": "custom_pcs_per_pack",
+   "dt": "Sales Order Item",
+   "read_only": 1,
+   "no_copy": 1,
+   "description": "2026-09-28 (feature v3) - = A Qty x Pcs per Pack, per your formula. Recalculated on save. Used by the Trims & Accessories Material Request for trims whose Consumption Unit is Per Pack."
+  },
+  {
    "fieldname": "custom_pack_per_ctn",
    "fieldtype": "Float",
    "label": "Pack Per Ctn",
-   "insert_after": "custom_pcs_per_pack",
+   "insert_after": "custom_total_packs",
    "dt": "Sales Order Item"
   },
   {
@@ -79,7 +80,7 @@
    "dt": "Sales Order Item",
    "read_only": 1,
    "no_copy": 1,
-   "description": "= Pcs per Pack x Pack Per Ctn, per your formula. Recalculated on save."
+   "description": "= AB Qty / (Pcs per Pack x Pack Per Ctn). Recalculated on save."
   },
   {
    "fieldname": "custom_set",
@@ -88,6 +89,27 @@
    "options": "\nSet 1\nSet 2\nSet 3\nSet 4\nSet 5\nSet 6\nSet 7\nSet 8\nSet 9\nSet 10",
    "insert_after": "custom_total_ctn",
    "dt": "Sales Order Item"
+  },
+  {
+   "fieldname": "custom_towel_costing_sheet",
+   "fieldtype": "Link",
+   "label": "Towel Costing Sheet",
+   "options": "Towel Costing Sheet",
+   "insert_after": "custom_set",
+   "dt": "Sales Order Item",
+   "read_only": 1,
+   "no_copy": 1,
+   "description": "Set from the source Towel Costing Sheet when the Sales Order is created via Get Items From. Used by mjfsd/emadi to resolve raw materials, dyeing contracts, and weaving receipts back to the originating costing sheet. Was present on production as a manually-added Custom Field but had never been exported into this app's fixtures - added 2026-09-25."
+  },
+  {
+   "fieldname": "custom_gsm",
+   "fieldtype": "Float",
+   "label": "GSM",
+   "insert_after": "custom_towel_costing_sheet",
+   "dt": "Sales Order Item",
+   "read_only": 1,
+   "no_copy": 1,
+   "description": "2026-09-28 (feature v3) - fetched from the Towel Costing Sheet's Finish Item table (the row whose Article matches this row's Item). Recalculated on save and live when Item or Towel Costing Sheet changes on the row."
   }
  ],
  "custom_perms": [],

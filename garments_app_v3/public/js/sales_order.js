@@ -25,6 +25,22 @@ frappe.ui.form.on('Sales Order', {
 			// actual item/BOM rows, rather than duplicating that fetch
 			// logic here.
 			frm.add_custom_button(__("Weaving Contract"), () => create_weaving_contract(frm));
+
+			// 2026-09-26 - "Create Material Request" dropdown: Yarn (TCS Raw
+			// Materials x Sales Order Qty) and Trims & Accessories (TCS
+			// Trims Gross Qty x Total Ctn/Total Packs/A Qty, by Consumption
+			// Unit - updated 2026-09-28, see create_material_request.py).
+			// Opens an unsaved Material Request.
+			frm.add_custom_button(
+				__("Yarn"),
+				() => create_material_request(frm, "Yarn"),
+				__("Create Material Request")
+			);
+			frm.add_custom_button(
+				__("Trims & Accessories"),
+				() => create_material_request(frm, "Trims & Accessories"),
+				__("Create Material Request")
+			);
 		}
 	}
 });
@@ -45,6 +61,13 @@ frappe.ui.form.on("Sales Order Item", {
 	custom_set(frm) {
 		recalc_total_sets(frm);
 	},
+	item_code(frm, cdt, cdn) {
+		sync_towel_costing_sheet(frm, cdt, cdn);
+		fetch_gsm(frm, cdt, cdn);
+	},
+	custom_towel_costing_sheet(frm, cdt, cdn) {
+		fetch_gsm(frm, cdt, cdn);
+	},
 	items_remove(frm) {
 		recalc_total_sets(frm);
 	}
@@ -58,8 +81,50 @@ function recalc_row(frm, cdt, cdn) {
 	let ab_qty = flt(row.qty) * (1 + flt(row.custom_b_qty_percent) / 100);
 	frappe.model.set_value(cdt, cdn, "custom_ab_qty", ab_qty);
 
-	let total_ctn = flt(row.custom_pcs_per_pack) * flt(row.custom_pack_per_ctn);
+	// Total Packs = A Qty / Pcs per Pack (2026-09-28, on A Qty - not AB Qty)
+	let total_packs = flt(row.custom_pcs_per_pack) ? flt(row.qty) / flt(row.custom_pcs_per_pack) : 0;
+	frappe.model.set_value(cdt, cdn, "custom_total_packs", total_packs);
+
+	// Total Ctn = AB Qty / (Pcs per Pack x Pack Per Ctn) - cartons for this row
+	let per_ctn = flt(row.custom_pcs_per_pack) * flt(row.custom_pack_per_ctn);
+	let total_ctn = per_ctn ? ab_qty / per_ctn : 0;
 	frappe.model.set_value(cdt, cdn, "custom_total_ctn", total_ctn);
+}
+
+// Live preview only - same reasoning as recalc_row above. "when I create
+// more rows of same finish item because it has different colors, it
+// should automatically puts the same Towel Costing Sheet reference if
+// item code is same" (your words). Copies from any sibling row on this
+// Sales Order with the same Item Code that already has one set.
+function sync_towel_costing_sheet(frm, cdt, cdn) {
+	let row = locals[cdt][cdn];
+	if (!row.item_code || row.custom_towel_costing_sheet) {
+		return;
+	}
+	let match = (frm.doc.items || []).find(
+		(r) => r.item_code === row.item_code && r.custom_towel_costing_sheet && r.name !== row.name
+	);
+	if (match) {
+		frappe.model.set_value(cdt, cdn, "custom_towel_costing_sheet", match.custom_towel_costing_sheet);
+	}
+}
+
+// Live preview only, same reasoning as recalc_row above - GSM is fetched
+// from the Towel Costing Sheet's Finish Item table (row whose Article
+// matches this row's Item), which isn't loaded on the Sales Order form,
+// so this needs a server round trip instead of a local calc.
+function fetch_gsm(frm, cdt, cdn) {
+	let row = locals[cdt][cdn];
+	if (!row.custom_towel_costing_sheet || !row.item_code) {
+		return;
+	}
+	frappe.call({
+		method: "garments_app_v3.events.sales_order_dyeing_calc.get_gsm_from_tcs_api",
+		args: { towel_costing_sheet: row.custom_towel_costing_sheet, item_code: row.item_code },
+		callback: (r) => {
+			frappe.model.set_value(cdt, cdn, "custom_gsm", r.message || 0);
+		}
+	});
 }
 
 function recalc_total_sets(frm) {
@@ -71,6 +136,19 @@ function recalc_total_sets(frm) {
 		}
 	});
 	frm.set_value("custom_total_sets", highest ? `Set ${highest}` : "");
+}
+
+function create_material_request(frm, request_for) {
+	frappe.call({
+		method: "garments_app_v3.events.create_material_request.make_material_request",
+		args: { sales_order: frm.doc.name, request_for: request_for },
+		freeze: true,
+		callback: (r) => {
+			if (!r.message) return;
+			frappe.model.sync(r.message);
+			frappe.set_route("Form", r.message.doctype, r.message.name);
+		}
+	});
 }
 
 function create_dyeing_contract(frm) {
@@ -117,7 +195,9 @@ function create_weaving_contract(frm) {
 function pick_finish_item(frm, items) {
 	let by_label = {};
 	let options = items.map((d) => {
-		let label = `${d.item_code} (Balance: ${d.balance_qty})`;
+		let label = flt(d.yarn_balance_lbs)
+			? `${d.item_code} (Yarn balance: ${format_number(d.yarn_balance_lbs)} lbs)`
+			: `${d.item_code} (Balance: ${d.balance_qty})`;
 		by_label[label] = d;
 		return label;
 	});

@@ -19,9 +19,20 @@ frappe.ui.form.on("Towel Costing Sheet Trim", {
 				recalc_amount(frm, cdt, cdn);
 			}
 		});
+		// meters_per_default_uom is fetch_from item_code.custom_meters_per_default_uom -
+		// frappe applies the fetch itself, but Gross Qty needs to react to it too;
+		// give the fetch a tick to land, then recalc.
+		setTimeout(() => recalc_gross_qty(frm, cdt, cdn), 300);
 	},
 	consumed_qty(frm, cdt, cdn) {
 		recalc_amount(frm, cdt, cdn);
+		recalc_gross_qty(frm, cdt, cdn);
+	},
+	wastage_percent(frm, cdt, cdn) {
+		recalc_gross_qty(frm, cdt, cdn);
+	},
+	meters_per_default_uom(frm, cdt, cdn) {
+		recalc_gross_qty(frm, cdt, cdn);
 	},
 	rate(frm, cdt, cdn) {
 		recalc_amount(frm, cdt, cdn);
@@ -31,4 +42,20 @@ frappe.ui.form.on("Towel Costing Sheet Trim", {
 function recalc_amount(frm, cdt, cdn) {
 	let row = locals[cdt][cdn];
 	frappe.model.set_value(cdt, cdn, "amount", flt(row.consumed_qty) * flt(row.rate));
+}
+
+// Gross Qty - live preview only, server recomputes authoritatively in
+// garments_app_v3.events.towel_costing_totals.compute_costing_totals (see
+// that file for the formula and the assumption it's flagged under).
+function recalc_gross_qty(frm, cdt, cdn) {
+	let row = locals[cdt][cdn];
+	let consumed = flt(row.consumed_qty);
+	let wastage_factor = 1 + flt(row.wastage_percent) / 100;
+	let gross_qty;
+	if (flt(row.meters_per_default_uom)) {
+		gross_qty = (consumed / flt(row.meters_per_default_uom)) * wastage_factor;
+	} else {
+		gross_qty = consumed * wastage_factor;
+	}
+	frappe.model.set_value(cdt, cdn, "gross_qty", gross_qty);
 }

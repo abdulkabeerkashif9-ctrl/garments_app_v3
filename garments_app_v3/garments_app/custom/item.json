@@ -182,6 +182,16 @@
    "translatable": 1,
    "unique": 0,
    "width": null
+  },
+  {
+   "dt": "Item",
+   "fieldname": "custom_meters_per_default_uom",
+   "fieldtype": "Float",
+   "label": "Meters per Default UOM",
+   "insert_after": "stock_uom",
+   "description": "2026-09-28 (feature v3) - how many meters are in one unit of this Item's Stock UOM (e.g. 100 meters per Roll). Used by the Towel Costing Sheet Trims table to convert a trim's meters-consumed into purchase units (Gross Qty) when this is set; left 0/blank for items that don't need that conversion.",
+   "default": "0",
+   "non_negative": 1
   }
  ],
  "custom_perms": [],

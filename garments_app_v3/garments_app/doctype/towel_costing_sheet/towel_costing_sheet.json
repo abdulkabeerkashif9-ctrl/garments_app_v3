@@ -102,7 +102,8 @@
    "fieldname": "job_no",
    "fieldtype": "Link",
    "label": "Job No",
-   "options": "Job No"
+   "options": "Job No",
+   "hidden": 1
   },
   {
    "fieldname": "master_towel_costing",
@@ -110,14 +111,15 @@
    "in_list_view": 1,
    "label": "Master Towel Costing",
    "options": "Master Towel Costing",
-   "reqd": 1,
-   "hidden": 0
+   "reqd": 0,
+   "hidden": 1
   },
   {
    "fieldname": "customer",
    "fieldtype": "Link",
    "label": "Customer",
-   "options": "Customer"
+   "options": "Customer",
+   "hidden": 1
   },
   {
    "fieldname": "column_break_3",
@@ -126,12 +128,14 @@
   {
    "fieldname": "customer_order_no",
    "fieldtype": "Data",
-   "label": "Customer Order No"
+   "label": "Customer Order No",
+   "hidden": 1
   },
   {
    "fieldname": "customer_order_date",
    "fieldtype": "Date",
-   "label": "Customer Order Date"
+   "label": "Customer Order Date",
+   "hidden": 1
   },
   {
    "fieldname": "amended_from",

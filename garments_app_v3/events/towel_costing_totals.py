@@ -14,6 +14,21 @@ from frappe.utils import flt
 #
 # Formulas (per row, grouped by Finish Item):
 #   Trims Amount        = Consumed Qty x Rate
+#   Trims Gross Qty      = added 2026-09-28 (feature v3) - if Meters Per
+#                          Default UOM (fetched from the Item) is set:
+#                            (Consumed Qty / Meters Per Default UOM) x
+#                            (1 + Wastage % / 100)
+#                          otherwise:
+#                            Consumed Qty x (1 + Wastage % / 100)
+#                          Your spec wrote "Gross Qty = (meters per default
+#                          UOM / qty consumed) + wastage%", which divides
+#                          the wrong way round (a huge number for a small
+#                          Consumed Qty) and adds a percent as a raw
+#                          number rather than inflating by it - read as a
+#                          typo for the conversion this formula actually
+#                          does (meters consumed -> purchase units, then
+#                          wastage on top). Flagged here and in CHANGES -
+#                          tell me if it should work differently.
 #   Yarn Rate            = sum of the Raw Materials table's Cost for rows
 #                          whose Article == this Finish Item
 #   Wastage Total Percent = that Finish Item's Dyeing Wastage % + Weaving
@@ -33,12 +48,24 @@ from frappe.utils import flt
 
 def compute_costing_totals(doc, method=None):
 	# --- Trims table: fetch rate (fallback if the client-side fetch on
-	# Item Code didn't run, e.g. a row pasted/imported) and recompute Amount.
+	# Item Code didn't run, e.g. a row pasted/imported) and recompute
+	# Amount / Gross Qty.
 	trims_total_by_finish_item = {}
 	for row in doc.get("trims") or []:
 		if row.item_code and not row.rate:
 			row.rate = get_most_recent_item_price(row.item_code) or 0
+		if row.item_code and not row.meters_per_default_uom:
+			row.meters_per_default_uom = flt(
+				frappe.get_cached_value("Item", row.item_code, "custom_meters_per_default_uom")
+			)
 		row.amount = flt(row.consumed_qty) * flt(row.rate)
+
+		wastage_factor = 1 + flt(row.wastage_percent) / 100
+		if flt(row.meters_per_default_uom):
+			row.gross_qty = (flt(row.consumed_qty) / flt(row.meters_per_default_uom)) * wastage_factor
+		else:
+			row.gross_qty = flt(row.consumed_qty) * wastage_factor
+
 		if row.finish_item:
 			trims_total_by_finish_item[row.finish_item] = (
 				trims_total_by_finish_item.get(row.finish_item, 0) + flt(row.amount)

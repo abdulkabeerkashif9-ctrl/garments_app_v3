@@ -6,6 +6,7 @@
  "engine": "InnoDB",
  "field_order": [
   "article",
+  "gsm",
   "uom",
   "finish_weight",
   "dyeing_wastage_percent",
@@ -24,6 +25,14 @@
    "in_list_view": 1,
    "label": "Article",
    "options": "Item"
+  },
+  {
+   "default": "0",
+   "fieldname": "gsm",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "GSM",
+   "description": "2026-09-28 (feature v3) - moved here from the Raw Materials table (GSM is a property of the finish article, not of each yarn row)."
   },
   {
    "fieldname": "uom",

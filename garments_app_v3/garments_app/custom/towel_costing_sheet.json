@@ -4,8 +4,9 @@
    "fieldname": "trims_section",
    "fieldtype": "Section Break",
    "label": "Consumption / Trims",
-   "insert_after": "finish_item_towel_costing",
-   "dt": "Towel Costing Sheet"
+   "insert_after": "total_cost",
+   "dt": "Towel Costing Sheet",
+   "description": "2026-09-28 (feature v3) - moved from right after Finish Item to right after the Raw Material section's Total Ratio/Total Cost, per the new layout order: Finish Item, Raw Material, Trims, Costing."
   },
   {
    "fieldname": "trims",

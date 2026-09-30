@@ -11,6 +11,9 @@
   "column_break_1",
   "consumption_unit",
   "consumed_qty",
+  "wastage_percent",
+  "meters_per_default_uom",
+  "gross_qty",
   "rate",
   "amount"
  ],
@@ -55,6 +58,30 @@
    "fieldtype": "Float",
    "label": "Consumed Qty",
    "in_list_view": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "wastage_percent",
+   "fieldtype": "Percent",
+   "label": "Wastage %",
+   "in_list_view": 1
+  },
+  {
+   "fetch_from": "item_code.custom_meters_per_default_uom",
+   "fieldname": "meters_per_default_uom",
+   "fieldtype": "Float",
+   "label": "Meters Per Default UOM",
+   "read_only": 1,
+   "description": "Fetched from the Item's Meters per Default UOM. When set (> 0), Gross Qty converts Consumed Qty (meters) into purchase units before adding wastage; when blank/0, Gross Qty is just Consumed Qty inflated by Wastage %."
+  },
+  {
+   "default": "0",
+   "fieldname": "gross_qty",
+   "fieldtype": "Float",
+   "label": "Gross Qty",
+   "read_only": 1,
+   "in_list_view": 1,
+   "description": "2026-09-28 (feature v3) - judgment call on your formula (it read as inverted/ambiguous - flagged in CHANGES and towel_costing_totals.py): if Meters Per Default UOM is set, Gross Qty = (Consumed Qty / Meters Per Default UOM) x (1 + Wastage % / 100); otherwise Gross Qty = Consumed Qty x (1 + Wastage % / 100). Tell me if it should work differently."
   },
   {
    "fieldname": "rate",
