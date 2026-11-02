@@ -6,7 +6,7 @@ import json
 import frappe
 from frappe import _
 from frappe.model.document import Document
-from frappe.utils import flt
+from frappe.utils import cint, flt
 
 
 class TowelCostingSheet(Document):
@@ -66,13 +66,30 @@ def make_sales_order(source_name, target_doc=None):
 	elif isinstance(target_doc, str):
 		target_doc = frappe.get_doc(json.loads(target_doc))
 
+	# Number of colors per finish item, from the Create button's popup: one
+	# Sales Order row per color (default 1 when nothing was asked).
+	color_counts = (frappe.flags.get("args") or {}).get("color_counts") or {}
+	if isinstance(color_counts, str):
+		color_counts = json.loads(color_counts)
+
+	seen = set()
 	for row in source.finish_item_towel_costing or []:
-		if not row.article:
+		if not row.article or row.article in seen:
 			continue
-		target_doc.append("items", {
-			"item_code": row.article,
-			"qty": 1,
-			"custom_towel_costing_sheet": source.name
-		})
+		seen.add(row.article)
+
+		item_name, stock_uom = frappe.db.get_value("Item", row.article, ["item_name", "stock_uom"]) or (None, None)
+		colors = max(1, cint(color_counts.get(row.article, 1)))
+
+		for _i in range(colors):
+			target_doc.append("items", {
+				"item_code": row.article,
+				"item_name": item_name,
+				"uom": stock_uom,
+				"stock_uom": stock_uom,
+				"conversion_factor": 1,
+				"qty": 1,
+				"custom_towel_costing_sheet": source.name
+			})
 
 	return target_doc

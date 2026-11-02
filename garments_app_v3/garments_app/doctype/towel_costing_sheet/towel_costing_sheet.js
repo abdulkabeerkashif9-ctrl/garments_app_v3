@@ -5,18 +5,19 @@ frappe.ui.form.on('Towel Costing Sheet', {
 
 	refresh: function(frm) {
 		set_raw_material_item_query(frm)
+		set_trims_queries(frm)
+		clear_all_descriptions(frm)
+		sync_costing_total(frm)
 
-		if (!frm.is_new()) {
+		if (frm.doc.docstatus === 1) {
 			frm.add_custom_button(__('Sales Order'), function() {
-				frappe.model.open_mapped_doc({
-					method: "garments_app_v3.garments_app.doctype.towel_costing_sheet.towel_costing_sheet.make_sales_order",
-					frm: frm
-				})
+				ask_color_counts(frm)
 			}, __('Create'))
 		}
 	},
 
 	before_save: function(frm){
+		sync_costing_total(frm)
 		let articles = (frm.doc.finish_item_towel_costing || [])
 			.map(d => d.article)
 			.filter(a => a)
@@ -248,7 +249,7 @@ function calc_greige_weight(frm, cdt, cdn){
 	let weaving_wastage_percent = flt(row.weaving_wastage_percet)
 
 	// greige weight = finish weight + (dyeing % + weaving %) of finish weight
-	let greige_weight = finish_weight * (1 + (dyeing_wastage_percent ) / 100)
+	let greige_weight = finish_weight * (1 + (dyeing_wastage_percent + weaving_wastage_percent) / 100)
 	frappe.model.set_value(cdt, cdn, "greige_weight", greige_weight)
 
 	// greige weight expressed in grams - used as the common unit when
@@ -362,4 +363,226 @@ function set_raw_material_item_query(frm){
 			}
 		}
 	})
+}
+
+// ---------------------------------------------------------------------
+// Remove every field description (parent fields, section breaks and the
+// fields of all child tables). The descriptions live in the doctype JSON;
+// this clears them when the form opens.
+// ---------------------------------------------------------------------
+function clear_all_descriptions(frm){
+	frappe.get_meta(frm.doctype).fields.forEach(df => {
+		if (df.description) {
+			frm.set_df_property(df.fieldname, "description", "")
+		}
+	})
+
+	frappe.get_meta(frm.doctype).fields
+		.filter(df => df.fieldtype === "Table" && df.options)
+		.forEach(table => {
+			let grid = frm.fields_dict[table.fieldname] && frm.fields_dict[table.fieldname].grid
+			if (!grid) {
+				return
+			}
+			frappe.get_meta(table.options).fields.forEach(df => {
+				if (df.description) {
+					df.description = ""
+					grid.update_docfield_property(df.fieldname, "description", "")
+				}
+			})
+		})
+}
+
+// ---------------------------------------------------------------------
+// Trims table: Finish Item only from the Finish Item table, Item Code only
+// from item group "Trims"
+// ---------------------------------------------------------------------
+function get_finish_articles(frm){
+	return (frm.doc.finish_item_towel_costing || []).map(d => d.article).filter(a => a)
+}
+
+function set_trims_queries(frm){
+	frm.set_query("finish_item", "trims", function(){
+		let articles = get_finish_articles(frm)
+		return { filters: { name: ["in", articles.length ? articles : ["__none__"]] } }
+	})
+	frm.set_query("item_code", "trims", function(){
+		return { filters: { item_group: "Trims" } }
+	})
+	frm.set_query("finish_item", "costing_total", function(){
+		let articles = get_finish_articles(frm)
+		return { filters: { name: ["in", articles.length ? articles : ["__none__"]] } }
+	})
+}
+
+// ---------------------------------------------------------------------
+// Costing Total table: one row per Finish Item row, kept up to date
+//   Weaving / Dyeing / Stitching Charges  <- Finish Item table charges per lbs
+//   Trims Charges                         <- sum of the Trims table amounts
+//   Yarn Rate                             <- sum of the Raw Materials cost
+//   Wastage Total %                       <- Dyeing + Weaving Wastage %
+//   Wastage Amount = Yarn Rate x Wastage Total % / 100
+//   Total Cost = Yarn Rate + Dyeing + Weaving + Wastage Amount + Stitching + Trims
+// (same formulas the server runs on save)
+// ---------------------------------------------------------------------
+function schedule_costing_sync(frm){
+	clearTimeout(frm._costing_sync_timer)
+	frm._costing_sync_timer = setTimeout(() => sync_costing_total(frm), 100)
+}
+
+function sync_costing_total(frm){
+	if (!frm.fields_dict.costing_total || frm.doc.docstatus !== 0) {
+		return
+	}
+
+	// one entry per distinct article, in table order
+	let finish_rows = []
+	;(frm.doc.finish_item_towel_costing || []).forEach(r => {
+		if (r.article && !finish_rows.find(f => f.article === r.article)) {
+			finish_rows.push(r)
+		}
+	})
+
+	let changed = false
+
+	// add the rows that are missing, drop the ones whose Finish Item is gone,
+	// and keep the table in the Finish Item table's order
+	let existing = frm.doc.costing_total || []
+	let ordered = finish_rows.map(f => {
+		let row = existing.find(r => r.finish_item === f.article)
+		if (!row) {
+			row = frappe.model.add_child(frm.doc, "Towel Costing Sheet Costing Total", "costing_total")
+			row.finish_item = f.article
+			changed = true
+		}
+		return row
+	})
+	let current = frm.doc.costing_total || []
+	if (current.length !== ordered.length || current.some((r, i) => r !== ordered[i])) {
+		changed = true
+		current.filter(r => !ordered.includes(r)).forEach(r => frappe.model.clear_doc(r.doctype, r.name))
+		frm.doc.costing_total = ordered
+		ordered.forEach((r, i) => { r.idx = i + 1 })
+	}
+
+	let trims_by_item = {}
+	;(frm.doc.trims || []).forEach(t => {
+		if (t.finish_item) {
+			trims_by_item[t.finish_item] = (trims_by_item[t.finish_item] || 0) + flt(t.consumed_qty) * flt(t.rate)
+		}
+	})
+	let yarn_by_item = {}
+	;(frm.doc.materials || []).forEach(m => {
+		if (m.item) {
+			yarn_by_item[m.item] = (yarn_by_item[m.item] || 0) + flt(m.cost)
+		}
+	})
+
+	ordered.forEach((row, i) => {
+		let f = finish_rows[i]
+		let yarn_rate = flt(yarn_by_item[f.article])
+		let wastage_total_percent = flt(f.dyeing_wastage_percent) + flt(f.weaving_wastage_percet)
+		let wastage_amount = yarn_rate * wastage_total_percent / 100
+		let trims_charges = flt(trims_by_item[f.article])
+		let dyeing = flt(f.dyeing_charges_per_lbs)
+		let weaving = flt(f.weaving_charges_per_lbs)
+		let stitching = flt(f.stitching_and_packing_charges_per_lbs)
+
+		let values = {
+			yarn_rate: yarn_rate,
+			dyeing_charges: dyeing,
+			weaving_charges: weaving,
+			stitching_charges: stitching,
+			trims_charges: trims_charges,
+			wastage_total_percent: wastage_total_percent,
+			wastage_amount: wastage_amount,
+			total_cost: yarn_rate + dyeing + weaving + wastage_amount + stitching + trims_charges
+		}
+		Object.keys(values).forEach(key => {
+			if (Math.abs(flt(row[key]) - values[key]) > 0.000001) {
+				row[key] = values[key]
+				changed = true
+			}
+		})
+	})
+
+	if (changed) {
+		frm.refresh_field("costing_total")
+		frm.dirty()
+	}
+}
+
+// anything that feeds the Costing Total table
+frappe.ui.form.on("Finish Item Towel Costing", {
+	article(frm){ schedule_costing_sync(frm) },
+	weaving_charges_per_lbs(frm){ schedule_costing_sync(frm) },
+	dyeing_charges_per_lbs(frm){ schedule_costing_sync(frm) },
+	stitching_and_packing_charges_per_lbs(frm){ schedule_costing_sync(frm) },
+	dyeing_wastage_percent(frm){ schedule_costing_sync(frm) },
+	weaving_wastage_percet(frm){ schedule_costing_sync(frm) },
+	finish_item_towel_costing_add(frm){ schedule_costing_sync(frm) },
+	finish_item_towel_costing_remove(frm){ schedule_costing_sync(frm) }
+})
+
+frappe.ui.form.on("Towel Costing Sheet Trim", {
+	finish_item(frm){ schedule_costing_sync(frm) },
+	item_code(frm){ schedule_costing_sync(frm) },
+	consumed_qty(frm){ schedule_costing_sync(frm) },
+	rate(frm){ schedule_costing_sync(frm) },
+	trims_remove(frm){ schedule_costing_sync(frm) }
+})
+
+frappe.ui.form.on("Towel Costing Sheet Raw Material", {
+	cost(frm){ schedule_costing_sync(frm) },
+	item(frm){ schedule_costing_sync(frm) },
+	materials_remove(frm){ schedule_costing_sync(frm) }
+})
+
+// ---------------------------------------------------------------------
+// Create > Sales Order: ask how many colors each Finish Item has; the Sales
+// Order gets that many rows of the item (item name and UOM come from Item)
+// ---------------------------------------------------------------------
+function ask_color_counts(frm){
+	let articles = []
+	;(frm.doc.finish_item_towel_costing || []).forEach(r => {
+		if (r.article && !articles.includes(r.article)) {
+			articles.push(r.article)
+		}
+	})
+	if (!articles.length) {
+		frappe.msgprint(__("Add at least one Finish Item first."))
+		return
+	}
+
+	let fields = articles.map((article, i) => ({
+		fieldname: "colors_" + i,
+		fieldtype: "Int",
+		label: article,
+		default: 1,
+		reqd: 1
+	}))
+
+	let dialog = new frappe.ui.Dialog({
+		title: __("Number of Colors"),
+		fields: fields,
+		primary_action_label: __("Create Sales Order"),
+		primary_action(values){
+			let color_counts = {}
+			for (let i = 0; i < articles.length; i++) {
+				let n = cint(values["colors_" + i])
+				if (n < 1) {
+					frappe.msgprint(__("Number of colors for {0} must be at least 1.", [articles[i]]))
+					return
+				}
+				color_counts[articles[i]] = n
+			}
+			dialog.hide()
+			frappe.model.open_mapped_doc({
+				method: "garments_app_v3.garments_app.doctype.towel_costing_sheet.towel_costing_sheet.make_sales_order",
+				frm: frm,
+				args: { color_counts: JSON.stringify(color_counts) }
+			})
+		}
+	})
+	dialog.show()
 }

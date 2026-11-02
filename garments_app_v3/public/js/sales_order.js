@@ -15,7 +15,7 @@ frappe.ui.form.on('Sales Order', {
 		}
 
 		if (frm.doc.docstatus === 1) {
-			frm.add_custom_button(__("Dyeing Contract"), () => create_dyeing_contract(frm));
+			frm.add_custom_button(__("Create Dyeing Contract"), () => create_dyeing_contract(frm));
 
 			// 2026-09-15 (feature v3) - "In Sales Order, Create Weaving
 			// Contract button is needed in Sales Order" (your words).
@@ -185,6 +185,20 @@ function create_weaving_contract(frm) {
 			let items = r.message || [];
 			if (!items.length) {
 				frappe.msgprint(__("No items with a pending weaving balance were found on this Sales Order."));
+				return;
+			}
+			if (items.length > 1) {
+				// several unique items: build one Commercial Multi Item contract with all of them
+				frappe.call({
+					method: "emadi_v3.emadi.events.get_items_from_sales_order.create_weaving_contract_from_sales_order",
+					args: { sales_order: frm.doc.name },
+					freeze: true,
+					callback: (res) => {
+						if (!res.message) return;
+						frappe.model.sync(res.message);
+						frappe.set_route("Form", res.message.doctype, res.message.name);
+					}
+				});
 				return;
 			}
 			pick_finish_item(frm, items);

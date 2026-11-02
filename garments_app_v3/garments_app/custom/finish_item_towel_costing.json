@@ -6,6 +6,21 @@
    "label": "Dyeing Wastage %",
    "insert_after": "dyeing_charges_per_lbs",
    "dt": "Finish Item Towel Costing"
+  },
+  {
+   "fieldname": "custom_dyeing_type",
+   "fieldtype": "Select",
+   "label": "Dyeing Type",
+   "options": "\nSolid\nStripe\nYarn Dyed",
+   "insert_after": "custom_dyeing_wastage_percent",
+   "dt": "Finish Item Towel Costing"
+  },
+  {
+   "fieldname": "custom_cut_size",
+   "fieldtype": "Data",
+   "label": "Cut Size",
+   "insert_after": "custom_dyeing_type",
+   "dt": "Finish Item Towel Costing"
   }
  ],
  "custom_perms": [],
