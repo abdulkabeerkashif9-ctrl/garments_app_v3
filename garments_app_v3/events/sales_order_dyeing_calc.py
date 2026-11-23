@@ -25,12 +25,11 @@ def recalc_ab_qty_and_total_ctn(doc):
 	apply_packs_and_cartons(doc.items or [])
 
 
-# Assortment (Sales Order Item > Assortment). Packs and cartons are worked out
-# per row first:
-#     Total Packs = A Qty / Pcs per Pack
-#     Total Ctn   = A Qty / (Pcs per Pack x Pack Per Ctn)
-# Rows that belong to one assorted pack are then pooled on the FIRST row of the
-# group (the other rows show 0, their packs / cartons are already in the first):
+# Assortment (Sales Order Item > Assortment). Rows that belong to one assorted
+# pack are worked out together on the FIRST row of the group (the other rows
+# show 0):
+#     Total Packs = sum of A Qty / sum of Pcs per Pack of the group
+#     Total Ctn   = Total Packs / Pack Per Ctn of the first row
 #     Solid                 - every row on its own
 #     Color Assorted        - same Item + same Set #  (different colors)
 #     Size Assorted         - same Color + same Set # (different items = sizes)
@@ -54,27 +53,32 @@ def assortment_group_key(row):
 
 
 def apply_packs_and_cartons(rows):
-	own = []
-	for row in rows:
-		packs = flt(row.qty) / flt(row.custom_pcs_per_pack) if flt(row.custom_pcs_per_pack) else 0
-		ctn = get_total_ctn(row.qty, row.custom_pcs_per_pack, row.custom_pack_per_ctn)
-		own.append((row, packs, ctn))
-
+	"""Solid / ungrouped rows: Total Packs = A Qty / Pcs per Pack, Total Ctn = A Qty / (Pcs per Pack x Pack Per Ctn).
+	Assorted group (saved on its first row, 0 on the others):
+	    Total Packs = sum of A Qty of the group / sum of Pcs per Pack of the group
+	    Total Ctn   = Total Packs / Pack Per Ctn of the first row"""
 	groups = {}
-	for row, packs, ctn in own:
+	for row in rows:
 		key = assortment_group_key(row)
 		if key is not None:
-			groups.setdefault(key, []).append((row, packs, ctn))
+			groups.setdefault(key, []).append(row)
 
-	pooled = {}
+	grouped = {}
 	for members in groups.values():
-		first = members[0][0]
-		pooled[id(first)] = (sum(m[1] for m in members), sum(m[2] for m in members))
+		pcs = sum(flt(m.custom_pcs_per_pack) for m in members)
+		packs = sum(flt(m.qty) for m in members) / pcs if pcs else 0
+		first = members[0]
+		ctn = packs / flt(first.custom_pack_per_ctn) if flt(first.custom_pack_per_ctn) else 0
+		grouped[id(first)] = (packs, ctn)
 		for m in members[1:]:
-			pooled[id(m[0])] = (0.0, 0.0)
+			grouped[id(m)] = (0.0, 0.0)
 
-	for row, packs, ctn in own:
-		row.custom_total_packs, row.custom_total_ctn = pooled.get(id(row), (packs, ctn))
+	for row in rows:
+		if id(row) in grouped:
+			row.custom_total_packs, row.custom_total_ctn = grouped[id(row)]
+		else:
+			row.custom_total_packs = flt(row.qty) / flt(row.custom_pcs_per_pack) if flt(row.custom_pcs_per_pack) else 0
+			row.custom_total_ctn = get_total_ctn(row.qty, row.custom_pcs_per_pack, row.custom_pack_per_ctn)
 
 
 def recalc_total_sets(doc):

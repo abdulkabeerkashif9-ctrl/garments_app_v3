@@ -93,8 +93,8 @@ function recalc_row(frm, cdt, cdn) {
 	recalc_packs(frm);
 }
 
-// Total Packs / Total Ctn with Assortment: per row A Qty / Pcs per Pack and A Qty / (Pcs per Pack x Pack Per Ctn);
-// rows of one assorted pack are pooled on the first row of the group, the others show 0.
+// Total Packs / Total Ctn with Assortment: a group = sum of A Qty / sum of Pcs per Pack (packs) and packs / Pack Per Ctn
+// of the first row (cartons), saved on the first row of the group, 0 on the others. Other rows: per row as always.
 //   Color Assorted - same Item + Set #  |  Size Assorted - same Color + Set #  |  Size + Color Assorted - same Set #
 // Live preview only - sales_order_dyeing_calc.py recalculates the same on save.
 function assortment_key(row) {
@@ -117,32 +117,34 @@ function assortment_key(row) {
 
 function recalc_packs(frm) {
 	const rows = frm.doc.items || [];
-	const own = rows.map((row) => {
-		const per_pack = flt(row.custom_pcs_per_pack);
-		const per_ctn = per_pack * flt(row.custom_pack_per_ctn);
-		return { row, packs: per_pack ? flt(row.qty) / per_pack : 0, ctn: per_ctn ? flt(row.qty) / per_ctn : 0 };
-	});
+	const result = new Map();
 	const groups = {};
-	own.forEach((o) => {
-		const key = assortment_key(o.row);
+	rows.forEach((row) => {
+		const key = assortment_key(row);
 		if (key !== null) {
-			(groups[key] = groups[key] || []).push(o);
+			(groups[key] = groups[key] || []).push(row);
 		}
 	});
 	Object.values(groups).forEach((members) => {
-		const packs = members.reduce((t, m) => t + m.packs, 0);
-		const ctn = members.reduce((t, m) => t + m.ctn, 0);
-		members.forEach((m, i) => {
-			m.packs = i === 0 ? packs : 0;
-			m.ctn = i === 0 ? ctn : 0;
-		});
+		const pcs = members.reduce((t, m) => t + flt(m.custom_pcs_per_pack), 0);
+		const packs = pcs ? members.reduce((t, m) => t + flt(m.qty), 0) / pcs : 0;
+		const per_ctn = flt(members[0].custom_pack_per_ctn);
+		result.set(members[0], [packs, per_ctn ? packs / per_ctn : 0]);
+		members.slice(1).forEach((m) => result.set(m, [0, 0]));
 	});
-	own.forEach((o) => {
-		if (flt(o.row.custom_total_packs) !== o.packs) {
-			frappe.model.set_value(o.row.doctype, o.row.name, "custom_total_packs", o.packs);
+	rows.forEach((row) => {
+		if (!result.has(row)) {
+			const per_pack = flt(row.custom_pcs_per_pack);
+			const per_ctn = per_pack * flt(row.custom_pack_per_ctn);
+			result.set(row, [per_pack ? flt(row.qty) / per_pack : 0, per_ctn ? flt(row.qty) / per_ctn : 0]);
 		}
-		if (flt(o.row.custom_total_ctn) !== o.ctn) {
-			frappe.model.set_value(o.row.doctype, o.row.name, "custom_total_ctn", o.ctn);
+	});
+	result.forEach(([packs, ctn], row) => {
+		if (flt(row.custom_total_packs) !== packs) {
+			frappe.model.set_value(row.doctype, row.name, "custom_total_packs", packs);
+		}
+		if (flt(row.custom_total_ctn) !== ctn) {
+			frappe.model.set_value(row.doctype, row.name, "custom_total_ctn", ctn);
 		}
 	});
 }
