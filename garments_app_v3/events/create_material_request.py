@@ -162,17 +162,34 @@ def _yarn_requirements(so):
 
 
 def _trims_requirements(so):
+	"""Trims & Accessories. Per Pcs trims use each row's A Qty. Per Pack / Per Ctn trims use the row's Total Packs /
+	Total Ctn; for an assorted group (Assortment on the Sales Order Item) those totals are pooled on the group's FIRST
+	row, so a Per Pack / Per Ctn trim is counted once per group on the pooled figure - a trim that belongs to a
+	specific Finish Item is counted once for that Finish Item, a trim with no Finish Item only on the first row."""
+	from garments_app_v3.events.sales_order_dyeing_calc import assortment_group_key
+
 	required = {}
 	cache = {}
+	first_of_group = {}
+	seen = set()
+
+	for row in so.items or []:
+		key = assortment_group_key(row)
+		if key is not None and key not in first_of_group:
+			first_of_group[key] = row
 
 	for row in so.items or []:
 		tcs = _get_tcs(row, cache)
 		if not tcs:
 			continue
 
+		key = assortment_group_key(row)
+		pooled_row = first_of_group.get(key, row) if key is not None else row
+		is_first = pooled_row is row
+
 		a_qty = flt(row.qty)
-		total_ctn = flt(row.get("custom_total_ctn"))
-		total_packs = flt(row.get("custom_total_packs"))
+		total_ctn = flt(pooled_row.get("custom_total_ctn"))
+		total_packs = flt(pooled_row.get("custom_total_packs"))
 
 		for t in tcs.get("trims") or []:
 			if not t.item_code:
@@ -188,6 +205,16 @@ def _trims_requirements(so):
 			else:
 				# "Per Pcs", or no Consumption Unit set.
 				basis = a_qty
+
+			if unit in ("Per Ctn", "Per Pack") and key is not None:
+				if not t.finish_item:
+					if not is_first:
+						continue
+				else:
+					mark = (key, t.item_code, t.finish_item, unit)
+					if mark in seen:
+						continue
+					seen.add(mark)
 
 			qty = flt(t.gross_qty) * basis
 			if qty:

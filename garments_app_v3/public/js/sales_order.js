@@ -60,8 +60,16 @@ frappe.ui.form.on("Sales Order Item", {
 	},
 	custom_set(frm) {
 		recalc_total_sets(frm);
+		recalc_packs(frm);
+	},
+	custom_assortment(frm) {
+		recalc_packs(frm);
+	},
+	custom_color(frm) {
+		recalc_packs(frm);
 	},
 	item_code(frm, cdt, cdn) {
+		recalc_packs(frm);
 		sync_towel_costing_sheet(frm, cdt, cdn);
 		fetch_gsm(frm, cdt, cdn);
 	},
@@ -70,6 +78,7 @@ frappe.ui.form.on("Sales Order Item", {
 	},
 	items_remove(frm) {
 		recalc_total_sets(frm);
+		recalc_packs(frm);
 	}
 });
 
@@ -81,14 +90,61 @@ function recalc_row(frm, cdt, cdn) {
 	let ab_qty = flt(row.qty) * (1 + flt(row.custom_b_qty_percent) / 100);
 	frappe.model.set_value(cdt, cdn, "custom_ab_qty", ab_qty);
 
-	// Total Packs = A Qty / Pcs per Pack (2026-09-28, on A Qty - not AB Qty)
-	let total_packs = flt(row.custom_pcs_per_pack) ? flt(row.qty) / flt(row.custom_pcs_per_pack) : 0;
-	frappe.model.set_value(cdt, cdn, "custom_total_packs", total_packs);
+	recalc_packs(frm);
+}
 
-	// Total Ctn = AB Qty / (Pcs per Pack x Pack Per Ctn) - cartons for this row
-	let per_ctn = flt(row.custom_pcs_per_pack) * flt(row.custom_pack_per_ctn);
-	let total_ctn = per_ctn ? ab_qty / per_ctn : 0;
-	frappe.model.set_value(cdt, cdn, "custom_total_ctn", total_ctn);
+// Total Packs / Total Ctn with Assortment: per row A Qty / Pcs per Pack and A Qty / (Pcs per Pack x Pack Per Ctn);
+// rows of one assorted pack are pooled on the first row of the group, the others show 0.
+//   Color Assorted - same Item + Set #  |  Size Assorted - same Color + Set #  |  Size + Color Assorted - same Set #
+// Live preview only - sales_order_dyeing_calc.py recalculates the same on save.
+function assortment_key(row) {
+	const kind = (row.custom_assortment || "Solid").trim();
+	const set_no = (row.custom_set || "").trim();
+	if (kind === "Solid" || !set_no) {
+		return null;
+	}
+	if (kind === "Color Assorted") {
+		return [kind, set_no, row.item_code || ""].join("|");
+	}
+	if (kind === "Size Assorted") {
+		return [kind, set_no, row.custom_color || ""].join("|");
+	}
+	if (kind === "Size + Color Assorted") {
+		return [kind, set_no].join("|");
+	}
+	return null;
+}
+
+function recalc_packs(frm) {
+	const rows = frm.doc.items || [];
+	const own = rows.map((row) => {
+		const per_pack = flt(row.custom_pcs_per_pack);
+		const per_ctn = per_pack * flt(row.custom_pack_per_ctn);
+		return { row, packs: per_pack ? flt(row.qty) / per_pack : 0, ctn: per_ctn ? flt(row.qty) / per_ctn : 0 };
+	});
+	const groups = {};
+	own.forEach((o) => {
+		const key = assortment_key(o.row);
+		if (key !== null) {
+			(groups[key] = groups[key] || []).push(o);
+		}
+	});
+	Object.values(groups).forEach((members) => {
+		const packs = members.reduce((t, m) => t + m.packs, 0);
+		const ctn = members.reduce((t, m) => t + m.ctn, 0);
+		members.forEach((m, i) => {
+			m.packs = i === 0 ? packs : 0;
+			m.ctn = i === 0 ? ctn : 0;
+		});
+	});
+	own.forEach((o) => {
+		if (flt(o.row.custom_total_packs) !== o.packs) {
+			frappe.model.set_value(o.row.doctype, o.row.name, "custom_total_packs", o.packs);
+		}
+		if (flt(o.row.custom_total_ctn) !== o.ctn) {
+			frappe.model.set_value(o.row.doctype, o.row.name, "custom_total_ctn", o.ctn);
+		}
+	});
 }
 
 // Live preview only - same reasoning as recalc_row above. "when I create

@@ -22,20 +22,59 @@ def recalc_ab_qty_and_total_ctn(doc):
 		# AB Qty = A Qty x (1 + B Qty% / 100) - confirmed formula: B Qty % is
 		# entered as a percentage OF A Qty, not an absolute qty of its own.
 		row.custom_ab_qty = flt(row.qty) * (1 + flt(row.custom_b_qty_percent) / 100)
+	apply_packs_and_cartons(doc.items or [])
 
-		# Total Packs = A Qty / Pcs per Pack (2026-09-28, corrected from a
-		# multiply - on A Qty, not AB Qty, unlike Total Ctn below).
-		row.custom_total_packs = (
-			flt(row.qty) / flt(row.custom_pcs_per_pack) if flt(row.custom_pcs_per_pack) else 0
-		)
 
-		# Total Ctn = AB Qty / (Pcs per Pack x Pack Per Ctn) - cartons needed
-		# for this row (confirmed 2026-09-26; replaces the old
-		# Pcs per Pack x Pack Per Ctn, which was pieces-per-carton). Shared
-		# with the Trims Material Request so both always agree.
-		row.custom_total_ctn = get_total_ctn(
-			row.qty, row.custom_pcs_per_pack, row.custom_pack_per_ctn
-		)
+# Assortment (Sales Order Item > Assortment). Packs and cartons are worked out
+# per row first:
+#     Total Packs = A Qty / Pcs per Pack
+#     Total Ctn   = A Qty / (Pcs per Pack x Pack Per Ctn)
+# Rows that belong to one assorted pack are then pooled on the FIRST row of the
+# group (the other rows show 0, their packs / cartons are already in the first):
+#     Solid                 - every row on its own
+#     Color Assorted        - same Item + same Set #  (different colors)
+#     Size Assorted         - same Color + same Set # (different items = sizes)
+#     Size + Color Assorted - same Set #              (different items and colors)
+# A row without a Set # can't be grouped and is treated as Solid. The Trims
+# Material Request reads these two fields, so it follows automatically.
+
+
+def assortment_group_key(row):
+	kind = (row.get("custom_assortment") or "Solid").strip()
+	set_no = (row.get("custom_set") or "").strip()
+	if kind == "Solid" or not set_no:
+		return None
+	if kind == "Color Assorted":
+		return (kind, set_no, row.get("item_code") or "")
+	if kind == "Size Assorted":
+		return (kind, set_no, row.get("custom_color") or "")
+	if kind == "Size + Color Assorted":
+		return (kind, set_no)
+	return None
+
+
+def apply_packs_and_cartons(rows):
+	own = []
+	for row in rows:
+		packs = flt(row.qty) / flt(row.custom_pcs_per_pack) if flt(row.custom_pcs_per_pack) else 0
+		ctn = get_total_ctn(row.qty, row.custom_pcs_per_pack, row.custom_pack_per_ctn)
+		own.append((row, packs, ctn))
+
+	groups = {}
+	for row, packs, ctn in own:
+		key = assortment_group_key(row)
+		if key is not None:
+			groups.setdefault(key, []).append((row, packs, ctn))
+
+	pooled = {}
+	for members in groups.values():
+		first = members[0][0]
+		pooled[id(first)] = (sum(m[1] for m in members), sum(m[2] for m in members))
+		for m in members[1:]:
+			pooled[id(m[0])] = (0.0, 0.0)
+
+	for row, packs, ctn in own:
+		row.custom_total_packs, row.custom_total_ctn = pooled.get(id(row), (packs, ctn))
 
 
 def recalc_total_sets(doc):
