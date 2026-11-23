@@ -14,7 +14,8 @@ from frappe.utils import flt, getdate, nowdate
 #   For every Sales Order Item row, the Towel Costing Sheet on that row
 #   (custom_towel_costing_sheet) -> Raw Materials table rows whose Article
 #   (`item`) is this row's Item:
-#       qty = Yarn Required in (Lbs) x Sales Order Qty (A Qty)
+#       qty = Yarn Required in (Lbs) x AB Qty of the row (custom_ab_qty;
+#             the row's Qty when AB Qty is empty)
 #   Summed per yarn (Raw Material) across all rows.
 #
 # Trims & Accessories:
@@ -153,7 +154,8 @@ def _yarn_requirements(so):
 		for m in tcs.get("materials") or []:
 			if m.item != row.item_code or not m.raw_material:
 				continue
-			qty = flt(m.yarn_required_in_lbs) * flt(row.qty)
+			# AB Qty (A Qty + B Qty %), else the plain Qty for rows that have none
+			qty = flt(m.yarn_required_in_lbs) * (flt(row.get("custom_ab_qty")) or flt(row.qty))
 			if qty:
 				required[m.raw_material] = required.get(m.raw_material, 0) + qty
 	return required
