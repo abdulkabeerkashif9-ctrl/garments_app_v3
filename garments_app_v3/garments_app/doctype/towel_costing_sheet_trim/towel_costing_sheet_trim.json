@@ -6,6 +6,7 @@
  "engine": "InnoDB",
  "field_order": [
   "finish_item",
+  "color",
   "item_group",
   "item_code",
   "column_break_1",
@@ -100,6 +101,14 @@
    "read_only": 1,
    "in_list_view": 1,
    "description": "= Consumed Qty x Rate. Not in your original field list - added to support the Costing Total table's Trims Charges rollup. Flag if you'd rather compute that differently."
+  },
+  {
+   "fieldname": "color",
+   "fieldtype": "Link",
+   "options": "Color",
+   "label": "Color",
+   "in_list_view": 1,
+   "description": "Leave empty for all colors. Fill it for a trim used only on that color, e.g. Thread Blue -> Blue."
   }
  ],
  "index_web_pages_for_search": 1,

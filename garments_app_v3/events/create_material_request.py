@@ -164,19 +164,31 @@ def _yarn_requirements(so):
 def _trims_requirements(so):
 	"""Trims & Accessories. Per Pcs trims use each row's A Qty. Per Pack / Per Ctn trims use the row's Total Packs /
 	Total Ctn; for an assorted group (Assortment on the Sales Order Item) those totals are pooled on the group's FIRST
-	row, so a Per Pack / Per Ctn trim is counted once per group on the pooled figure - a trim that belongs to a
-	specific Finish Item is counted once for that Finish Item, a trim with no Finish Item only on the first row."""
+	row, so a Per Pack / Per Ctn trim is counted once per group on the pooled figure.
+
+	A trim row with a Color (Thread Blue -> Blue) only applies to the Sales Order rows of that color; no Color = every
+	row. A trim that belongs to a specific Finish Item is counted once for that Finish Item, a trim with no Finish
+	Item (and no Color) only on the first row of the group."""
 	from garments_app_v3.events.sales_order_dyeing_calc import assortment_group_key
 
 	required = {}
 	cache = {}
 	first_of_group = {}
+	members = {}
 	seen = set()
 
 	for row in so.items or []:
 		key = assortment_group_key(row)
-		if key is not None and key not in first_of_group:
-			first_of_group[key] = row
+		if key is not None:
+			first_of_group.setdefault(key, row)
+			members.setdefault(key, []).append(row)
+
+	def applies(t, row):
+		if t.finish_item and t.finish_item != row.item_code:
+			return False
+		if t.get("color") and (row.get("custom_color") or "") != t.color:
+			return False
+		return True
 
 	for row in so.items or []:
 		tcs = _get_tcs(row, cache)
@@ -194,10 +206,24 @@ def _trims_requirements(so):
 		for t in tcs.get("trims") or []:
 			if not t.item_code:
 				continue
-			if t.finish_item and t.finish_item != row.item_code:
-				continue
 
 			unit = (t.consumption_unit or "").strip()
+			pooled_unit = unit in ("Per Ctn", "Per Pack") and key is not None
+
+			if pooled_unit:
+				# once per group: whichever row of the group meets the trim's Finish Item / Color
+				if not any(applies(t, m) for m in members[key]):
+					continue
+				mark = (key, t.item_code, t.finish_item or "", t.get("color") or "", unit)
+				if t.finish_item or t.get("color"):
+					if mark in seen:
+						continue
+					seen.add(mark)
+				elif not is_first:
+					continue
+			elif not applies(t, row):
+				continue
+
 			if unit == "Per Ctn":
 				basis = total_ctn
 			elif unit == "Per Pack":
@@ -205,16 +231,6 @@ def _trims_requirements(so):
 			else:
 				# "Per Pcs", or no Consumption Unit set.
 				basis = a_qty
-
-			if unit in ("Per Ctn", "Per Pack") and key is not None:
-				if not t.finish_item:
-					if not is_first:
-						continue
-				else:
-					mark = (key, t.item_code, t.finish_item, unit)
-					if mark in seen:
-						continue
-					seen.add(mark)
 
 			qty = flt(t.gross_qty) * basis
 			if qty:
