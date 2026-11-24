@@ -406,8 +406,10 @@ function set_trims_queries(frm){
 		let articles = get_finish_articles(frm)
 		return { filters: { name: ["in", articles.length ? articles : ["__none__"]] } }
 	})
-	frm.set_query("item_code", "trims", function(){
-		return { filters: { item_group: "Trims" } }
+	frm.set_query("item_code", "trims", function(doc, cdt, cdn){
+		// only the items of the row's Item Group (sub-groups included); no group chosen yet -> Trims, as before
+		let group = locals[cdt][cdn].item_group
+		return { filters: { item_group: group ? ["descendants of (inclusive)", group] : "Trims" } }
 	})
 	frm.set_query("finish_item", "costing_total", function(){
 		let articles = get_finish_articles(frm)
@@ -525,6 +527,29 @@ frappe.ui.form.on("Finish Item Towel Costing", {
 })
 
 frappe.ui.form.on("Towel Costing Sheet Trim", {
+	item_group(frm, cdt, cdn){
+		// an Item that is not in the newly chosen group is cleared
+		let row = locals[cdt][cdn]
+		if(row.item_code && row.item_group){
+			frappe.call({
+				method: "frappe.client.get_list",
+				args: { doctype: "Item Group", filters: { name: ["descendants of (inclusive)", row.item_group] }, fields: ["name"], limit_page_length: 0 },
+				callback: (r) => {
+					let groups = (r.message || []).map(g => g.name)
+					frappe.db.get_value("Item", row.item_code, "item_group").then(res => {
+						let g = res && res.message && res.message.item_group
+						if(g && !groups.includes(g)){
+							frappe.model.set_value(cdt, cdn, "item_code", "")
+						}
+						schedule_costing_sync(frm)
+					})
+				}
+			})
+		}
+		else {
+			schedule_costing_sync(frm)
+		}
+	},
 	finish_item(frm){ schedule_costing_sync(frm) },
 	item_code(frm){ schedule_costing_sync(frm) },
 	consumed_qty(frm){ schedule_costing_sync(frm) },
