@@ -62,7 +62,8 @@
    "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Yarn Required in (Lbs)",
-   "read_only": 1
+   "read_only": 1,
+   "description": "Finish weight of the article (lbs per piece) x Ratio %."
   },
   {
    "columns": 1,

@@ -328,23 +328,23 @@ function get_finish_item_row(frm, article){
 	return (frm.doc.finish_item_towel_costing || []).find(r => r.article === article)
 }
 
-// yarn required (lbs) for one raw material row, based on the greige
+// yarn required (lbs) for one raw material row, based on the FINISH
 // weight/UOM of the finish item row matching this row's article:
-//   UOM Gram:      (greige_weight / 1000 * 2.2046) * ratio%
-//   UOM LBS/Dozen: (greige_weight / 12) * ratio%
+//   UOM Gram:      (finish_weight / 1000 * 2.2046) * ratio%
+//   UOM LBS/Dozen: (finish_weight / 12) * ratio%
 function calc_yarn_required(frm, cdt, cdn){
 	let row = locals[cdt][cdn]
 	let finish_row = get_finish_item_row(frm, row.item)
 	let yarn_required_in_lbs = 0
 
 	if (finish_row) {
-		let greige_weight = flt(finish_row.greige_weight)
+		let finish_weight = flt(finish_row.finish_weight)
 		let base_lbs
 		if (finish_row.uom === "LBS/Dozen") {
-			base_lbs = greige_weight / 12
+			base_lbs = finish_weight / 12
 		} else {
 			// Gram - convert to lbs
-			base_lbs = (greige_weight / 1000) * 2.2046
+			base_lbs = (finish_weight / 1000) * 2.2046
 		}
 		yarn_required_in_lbs = base_lbs * (flt(row.ratio) / 100)
 	}

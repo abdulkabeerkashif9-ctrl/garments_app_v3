@@ -57,6 +57,14 @@ def greige_lbs_per_pc(finish_row):
 	return greige / 12 if finish_row.uom == "LBS/Dozen" else greige / 1000 * LBS_PER_KG
 
 
+def finish_lbs_per_pc(finish_row):
+	"""Finish weight of one piece in LBS (Gram -> g / 1000 x 2.2046, LBS/Dozen -> / 12)."""
+	if not finish_row:
+		return 0.0
+	weight = flt(finish_row.finish_weight)
+	return weight / 12 if finish_row.uom == "LBS/Dozen" else weight / 1000 * LBS_PER_KG
+
+
 def trim_amount(row):
 	"""Cost of the trim's Consumed Qty. Rates are per default UOM (thread: per Cone) while thread is consumed in meters:
 	when the Item has Meters per Default UOM, Amount = Consumed Qty / Meters per Default UOM x Rate."""
@@ -114,20 +122,24 @@ def compute_costing_totals(doc, method=None):
 			pcs_per_ctn[r.article] = flt(r.get("pcs_per_ctn"))
 	trims_by_finish_item = trims_charges_by_finish_item(doc.get("trims"), pcs_per_ctn)
 
-	# --- Yarn Cost/LBS and Cost/Pcs per Finish Item, from the Raw Materials table.
-	yarn_rate_by_finish_item, yarn_pc_by_finish_item = {}, {}
-	for row in doc.get("materials") or []:
-		if not row.item:
-			continue
-		row.cost_per_pc = flt(row.price) * flt(row.yarn_required_in_lbs)   # Ratio is already inside Yarn Required
-		yarn_rate_by_finish_item[row.item] = yarn_rate_by_finish_item.get(row.item, 0) + flt(row.cost)
-		yarn_pc_by_finish_item[row.item] = yarn_pc_by_finish_item.get(row.item, 0) + flt(row.cost_per_pc)
-
-	# --- Wastage % and greige lbs per piece per Finish Item, from the Finish Item table.
+	# --- first row per Finish Item (Article) of the Finish Item table: wastage %, weights
 	finish_rows = {}
 	for row in doc.get("finish_item_towel_costing") or []:
 		if row.article and row.article not in finish_rows:
 			finish_rows[row.article] = row
+
+	# --- Raw Materials: Yarn Required (lbs per piece, FINISH weight x Ratio %), Bags, Cost/Pcs; sums per Finish Item
+	yarn_rate_by_finish_item, yarn_pc_by_finish_item = {}, {}
+	for row in doc.get("materials") or []:
+		if not row.item:
+			continue
+		finish_row = finish_rows.get(row.item)
+		if finish_row:
+			row.yarn_required_in_lbs = finish_lbs_per_pc(finish_row) * flt(row.ratio) / 100
+			row.bags_reqd = flt(row.yarn_required_in_lbs) / 100
+		row.cost_per_pc = flt(row.price) * flt(row.yarn_required_in_lbs)   # Ratio is already inside Yarn Required
+		yarn_rate_by_finish_item[row.item] = yarn_rate_by_finish_item.get(row.item, 0) + flt(row.cost)
+		yarn_pc_by_finish_item[row.item] = yarn_pc_by_finish_item.get(row.item, 0) + flt(row.cost_per_pc)
 
 	for row in doc.get("costing_total") or []:
 		finish_item = row.finish_item
