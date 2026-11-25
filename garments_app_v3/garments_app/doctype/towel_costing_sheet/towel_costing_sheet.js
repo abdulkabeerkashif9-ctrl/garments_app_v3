@@ -342,6 +342,8 @@ function calc_yarn_required(frm, cdt, cdn){
 
 	frappe.model.set_value(cdt, cdn, "yarn_required_in_lbs", yarn_required_in_lbs)
 	frappe.model.set_value(cdt, cdn, "bags_reqd", yarn_required_in_lbs / 100)
+	row.yarn_required_in_lbs = yarn_required_in_lbs
+	set_cost_per_pc(cdt, cdn)
 }
 
 function recalc_all_raw_material_rows(frm){
@@ -467,38 +469,54 @@ function sync_costing_total(frm){
 		ordered.forEach((r, i) => { r.idx = i + 1 })
 	}
 
-	let trims_by_item = {}
+	// Trims Charges/Pcs: trims without a Color are added up; trims with a Color (Thread Blue / Green ...) are
+	// alternatives - each (Finish Item, Item Group) counts once, at the average of its rows' amounts
+	let trims_plain = {}
+	let trims_colored = {}
 	;(frm.doc.trims || []).forEach(t => {
-		if (t.finish_item) {
-			trims_by_item[t.finish_item] = (trims_by_item[t.finish_item] || 0) + flt(t.consumed_qty) * flt(t.rate)
+		if (!t.finish_item) { return }
+		let amount = flt(t.consumed_qty) * flt(t.rate)
+		if (t.color) {
+			let key = t.finish_item + "||" + (t.item_group || "")
+			;(trims_colored[key] = trims_colored[key] || {finish_item: t.finish_item, amounts: []}).amounts.push(amount)
+		} else {
+			trims_plain[t.finish_item] = (trims_plain[t.finish_item] || 0) + amount
 		}
 	})
+	let trims_by_item = Object.assign({}, trims_plain)
+	Object.values(trims_colored).forEach(g => {
+		trims_by_item[g.finish_item] = (trims_by_item[g.finish_item] || 0) + g.amounts.reduce((a, b) => a + b, 0) / g.amounts.length
+	})
 	let yarn_by_item = {}
+	let yarn_pc_by_item = {}
 	;(frm.doc.materials || []).forEach(m => {
 		if (m.item) {
 			yarn_by_item[m.item] = (yarn_by_item[m.item] || 0) + flt(m.cost)
+			yarn_pc_by_item[m.item] = (yarn_pc_by_item[m.item] || 0) + flt(m.cost) * flt(m.yarn_required_in_lbs)
 		}
 	})
 
 	ordered.forEach((row, i) => {
 		let f = finish_rows[i]
 		let yarn_rate = flt(yarn_by_item[f.article])
+		let yarn_pc = flt(yarn_pc_by_item[f.article])
 		let wastage_total_percent = flt(f.dyeing_wastage_percent) + flt(f.weaving_wastage_percet)
-		let wastage_amount = yarn_rate * wastage_total_percent / 100
+		let wastage_amount = yarn_pc * wastage_total_percent / 100
 		let trims_charges = flt(trims_by_item[f.article])
-		let dyeing = flt(f.dyeing_charges_per_lbs)
-		let weaving = flt(f.weaving_charges_per_lbs)
-		let stitching = flt(f.stitching_and_packing_charges_per_lbs)
+		// greige weight of one piece in LBS (Gram -> g / 1000 x 2.2046, LBS/Dozen -> / 12)
+		let lbs = f.uom === "LBS/Dozen" ? flt(f.greige_weight) / 12 : flt(f.greige_weight) / 1000 * 2.2046
+		let dyeing_pc = flt(row.dyeing_charges) * lbs
+		let weaving_pc = flt(row.weaving_charges) * lbs
 
 		let values = {
 			yarn_rate: yarn_rate,
-			dyeing_charges: dyeing,
-			weaving_charges: weaving,
-			stitching_charges: stitching,
+			yarn_cost_per_pc: yarn_pc,
+			dyeing_charges_per_pc: dyeing_pc,
+			weaving_charges_per_pc: weaving_pc,
 			trims_charges: trims_charges,
 			wastage_total_percent: wastage_total_percent,
 			wastage_amount: wastage_amount,
-			total_cost: yarn_rate + dyeing + weaving + wastage_amount + stitching + trims_charges
+			total_cost: yarn_pc + dyeing_pc + weaving_pc + wastage_amount + flt(row.stitching_charges) + flt(row.cutting_charges) + trims_charges
 		}
 		Object.keys(values).forEach(key => {
 			if (Math.abs(flt(row[key]) - values[key]) > 0.000001) {
@@ -524,6 +542,13 @@ frappe.ui.form.on("Finish Item Towel Costing", {
 	weaving_wastage_percet(frm){ schedule_costing_sync(frm) },
 	finish_item_towel_costing_add(frm){ schedule_costing_sync(frm) },
 	finish_item_towel_costing_remove(frm){ schedule_costing_sync(frm) }
+})
+
+frappe.ui.form.on("Towel Costing Sheet Costing Total", {
+	dyeing_charges(frm){ schedule_costing_sync(frm) },
+	weaving_charges(frm){ schedule_costing_sync(frm) },
+	stitching_charges(frm){ schedule_costing_sync(frm) },
+	cutting_charges(frm){ schedule_costing_sync(frm) }
 })
 
 frappe.ui.form.on("Towel Costing Sheet Trim", {
@@ -552,6 +577,7 @@ frappe.ui.form.on("Towel Costing Sheet Trim", {
 	},
 	finish_item(frm){ schedule_costing_sync(frm) },
 	item_code(frm){ schedule_costing_sync(frm) },
+	color(frm){ schedule_costing_sync(frm) },
 	consumed_qty(frm){ schedule_costing_sync(frm) },
 	rate(frm){ schedule_costing_sync(frm) },
 	trims_remove(frm){ schedule_costing_sync(frm) }

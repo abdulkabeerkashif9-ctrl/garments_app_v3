@@ -46,65 +46,89 @@ from frappe.utils import flt
 # of these should work differently.
 
 
+LBS_PER_KG = 2.2046
+
+
+def greige_lbs_per_pc(finish_row):
+	"""Greige weight of one piece in LBS (Gram -> g / 1000 x 2.2046, LBS/Dozen -> / 12)."""
+	if not finish_row:
+		return 0.0
+	greige = flt(finish_row.greige_weight)
+	return greige / 12 if finish_row.uom == "LBS/Dozen" else greige / 1000 * LBS_PER_KG
+
+
+def trims_charges_by_finish_item(trims):
+	"""Trims Charges/Pcs per Finish Item. Trims without a Color are added up; trims with a Color (Thread Blue /
+	Green / ...) are alternatives of each other - only one color is on a piece - so each (Finish Item, Item Group) of
+	them counts once, at the average of its rows' Amounts (average rate x consumed qty)."""
+	plain, colored = {}, {}
+	for row in trims or []:
+		if not row.finish_item:
+			continue
+		amount = flt(row.amount)
+		if row.get("color"):
+			group = row.get("item_group") or (
+				frappe.db.get_value("Item", row.item_code, "item_group") if row.item_code else ""
+			)
+			colored.setdefault((row.finish_item, group or ""), []).append(amount)
+		else:
+			plain[row.finish_item] = plain.get(row.finish_item, 0) + amount
+	out = dict(plain)
+	for (finish_item, _group), amounts in colored.items():
+		out[finish_item] = out.get(finish_item, 0) + sum(amounts) / len(amounts)
+	return out
+
+
 def compute_costing_totals(doc, method=None):
 	# --- Trims table: fetch rate (fallback if the client-side fetch on
-	# Item Code didn't run, e.g. a row pasted/imported) and recompute
-	# Amount / Gross Qty.
-	trims_total_by_finish_item = {}
+	# Item Code didn't run, e.g. a row pasted/imported) and recompute Amount.
 	for row in doc.get("trims") or []:
 		if row.item_code and not row.rate:
 			row.rate = get_most_recent_item_price(row.item_code) or 0
-		if row.item_code and not row.meters_per_default_uom:
-			row.meters_per_default_uom = flt(
-				frappe.get_cached_value("Item", row.item_code, "custom_meters_per_default_uom")
-			)
 		row.amount = flt(row.consumed_qty) * flt(row.rate)
+	trims_by_finish_item = trims_charges_by_finish_item(doc.get("trims"))
 
-		wastage_factor = 1 + flt(row.wastage_percent) / 100
-		if flt(row.meters_per_default_uom):
-			row.gross_qty = (flt(row.consumed_qty) / flt(row.meters_per_default_uom)) * wastage_factor
-		else:
-			row.gross_qty = flt(row.consumed_qty) * wastage_factor
-
-		if row.finish_item:
-			trims_total_by_finish_item[row.finish_item] = (
-				trims_total_by_finish_item.get(row.finish_item, 0) + flt(row.amount)
-			)
-
-	# --- Yarn Rate per Finish Item, from the existing Raw Materials table.
-	yarn_rate_by_finish_item = {}
+	# --- Yarn Cost/LBS and Cost/Pcs per Finish Item, from the Raw Materials table.
+	yarn_rate_by_finish_item, yarn_pc_by_finish_item = {}, {}
 	for row in doc.get("materials") or []:
 		if not row.item:
 			continue
+		row.cost_per_pc = flt(row.cost) * flt(row.yarn_required_in_lbs)
 		yarn_rate_by_finish_item[row.item] = yarn_rate_by_finish_item.get(row.item, 0) + flt(row.cost)
+		yarn_pc_by_finish_item[row.item] = yarn_pc_by_finish_item.get(row.item, 0) + flt(row.cost_per_pc)
 
-	# --- Wastage % per Finish Item, from the existing Finish Item table.
-	wastage_percent_by_finish_item = {}
+	# --- Wastage % and greige lbs per piece per Finish Item, from the Finish Item table.
+	finish_rows = {}
 	for row in doc.get("finish_item_towel_costing") or []:
-		if not row.article:
-			continue
-		wastage_percent_by_finish_item[row.article] = flt(row.dyeing_wastage_percent) + flt(
-			row.weaving_wastage_percet
-		)
+		if row.article and row.article not in finish_rows:
+			finish_rows[row.article] = row
 
 	for row in doc.get("costing_total") or []:
 		finish_item = row.finish_item
+		finish_row = finish_rows.get(finish_item)
 		yarn_rate = flt(yarn_rate_by_finish_item.get(finish_item))
-		wastage_total_percent = flt(wastage_percent_by_finish_item.get(finish_item))
-		wastage_amount = yarn_rate * wastage_total_percent / 100
-		trims_charges = flt(trims_total_by_finish_item.get(finish_item))
+		yarn_pc = flt(yarn_pc_by_finish_item.get(finish_item))
+		wastage_total_percent = (
+			flt(finish_row.dyeing_wastage_percent) + flt(finish_row.weaving_wastage_percet) if finish_row else 0
+		)
+		wastage_amount = yarn_pc * wastage_total_percent / 100
+		lbs = greige_lbs_per_pc(finish_row)
 
 		row.yarn_rate = yarn_rate
+		row.yarn_cost_per_pc = yarn_pc
+		row.dyeing_charges_per_pc = flt(row.dyeing_charges) * lbs
+		row.weaving_charges_per_pc = flt(row.weaving_charges) * lbs
 		row.wastage_total_percent = wastage_total_percent
 		row.wastage_amount = wastage_amount
-		row.trims_charges = trims_charges
+		row.trims_charges = flt(trims_by_finish_item.get(finish_item))
 		row.total_cost = (
-			yarn_rate
-			+ flt(row.dyeing_charges)
-			+ flt(row.weaving_charges)
+			yarn_pc
+			+ row.dyeing_charges_per_pc
+			+ row.weaving_charges_per_pc
 			+ wastage_amount
 			+ flt(row.stitching_charges)
-			+ trims_charges
+			+ flt(row.cutting_charges)
+			+ row.trims_charges
 		)
 
 

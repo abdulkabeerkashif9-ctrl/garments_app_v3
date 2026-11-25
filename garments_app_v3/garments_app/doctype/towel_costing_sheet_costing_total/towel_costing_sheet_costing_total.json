@@ -7,12 +7,16 @@
  "field_order": [
   "finish_item",
   "yarn_rate",
+  "yarn_cost_per_pc",
   "dyeing_charges",
   "weaving_charges",
+  "dyeing_charges_per_pc",
+  "weaving_charges_per_pc",
   "column_break_1",
   "wastage_amount",
   "wastage_total_percent",
   "stitching_charges",
+  "cutting_charges",
   "trims_charges",
   "total_cost"
  ],
@@ -28,24 +32,24 @@
   {
    "fieldname": "yarn_rate",
    "fieldtype": "Currency",
-   "label": "Yarn Rate",
+   "label": "Yarn Cost/LBS",
    "read_only": 1,
    "in_list_view": 1,
-   "description": "= sum of the Raw Materials table's Cost for rows whose Article matches this row's Finish Item. Judgment call - flag if you meant something else by Yarn Rate."
+   "description": "= sum of the Raw Materials table's Cost/LBS for rows whose Article matches this Finish Item."
   },
   {
    "fieldname": "dyeing_charges",
    "fieldtype": "Currency",
-   "label": "Dyeing Charges",
+   "label": "Dyeing Charges/LBS",
    "in_list_view": 1,
-   "description": "Manual entry."
+   "description": "Type the dyeing charge per LBS."
   },
   {
    "fieldname": "weaving_charges",
    "fieldtype": "Currency",
-   "label": "Weaving Charges",
+   "label": "Weaving Charges/LBS",
    "in_list_view": 1,
-   "description": "Manual entry."
+   "description": "Type the weaving charge per LBS."
   },
   {
    "fieldname": "column_break_1",
@@ -54,40 +58,71 @@
   {
    "fieldname": "wastage_amount",
    "fieldtype": "Currency",
-   "label": "Wastage Amount",
+   "label": "Wastage Amount/Pcs",
    "read_only": 1,
    "in_list_view": 1,
-   "description": "= Yarn Rate x Wastage Total Percent / 100. Judgment call - flag if you meant a different base."
+   "description": "= Yarn Cost/Pcs x Wastage Total % / 100."
   },
   {
    "fieldname": "wastage_total_percent",
    "fieldtype": "Percent",
-   "label": "Wastage Total Percent",
+   "label": "Wastage Total % (Dyeing + Weaving)",
    "read_only": 1,
    "description": "= this Finish Item's Dyeing Wastage % + Weaving Wastage % (from the Finish Item table above)."
   },
   {
    "fieldname": "stitching_charges",
    "fieldtype": "Currency",
-   "label": "Stitching Charges",
+   "label": "Stitching Charges/Pcs",
    "in_list_view": 1,
-   "description": "Manual entry."
+   "description": "Type the stitching charge per piece."
   },
   {
    "fieldname": "trims_charges",
    "fieldtype": "Currency",
-   "label": "Trims Charges",
+   "label": "Trims Charges/Pcs",
    "read_only": 1,
    "in_list_view": 1,
-   "description": "= sum of the new Trims table's Amount for rows whose Finish Item matches this row."
+   "description": "Calculated from the Trims table: trims without a Color added up; trims with a Color averaged per Item Group (only one color is used on a piece)."
   },
   {
    "fieldname": "total_cost",
    "fieldtype": "Currency",
-   "label": "Total Cost",
+   "label": "Total Cost/Pcs",
    "read_only": 1,
    "in_list_view": 1,
-   "description": "= Yarn Rate + Dyeing Charges + Weaving Charges + Wastage Amount + Stitching Charges + Trims Charges."
+   "description": "= Yarn Cost/Pcs + Dyeing/Pcs + Weaving/Pcs + Wastage Amount/Pcs + Stitching/Pcs + Cutting/Pcs + Trims/Pcs."
+  },
+  {
+   "fieldname": "yarn_cost_per_pc",
+   "fieldtype": "Currency",
+   "label": "Yarn Cost/Pcs",
+   "in_list_view": 1,
+   "description": "= sum of the Raw Materials table's Cost/Pcs for this Finish Item.",
+   "read_only": 1
+  },
+  {
+   "fieldname": "dyeing_charges_per_pc",
+   "fieldtype": "Currency",
+   "label": "Dyeing Charges/Pcs",
+   "in_list_view": 1,
+   "description": "= Dyeing Charges/LBS x greige weight of one piece in LBS.",
+   "read_only": 1
+  },
+  {
+   "fieldname": "weaving_charges_per_pc",
+   "fieldtype": "Currency",
+   "label": "Weaving Charges/Pcs",
+   "in_list_view": 1,
+   "description": "= Weaving Charges/LBS x greige weight of one piece in LBS.",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cutting_charges",
+   "fieldtype": "Currency",
+   "label": "Cutting Charges/Pcs",
+   "in_list_view": 1,
+   "description": "Type the cutting charge per piece."
   }
  ],
  "index_web_pages_for_search": 1,

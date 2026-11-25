@@ -82,29 +82,33 @@
    "default": "0",
    "fieldname": "weaving_charges_per_lbs",
    "fieldtype": "Currency",
-   "in_list_view": 1,
-   "label": "Weaving Charges Per Lbs"
+   "in_list_view": 0,
+   "label": "Weaving Charges Per Lbs",
+   "hidden": 1
   },
   {
    "default": "0",
    "fieldname": "dyeing_charges_per_lbs",
    "fieldtype": "Currency",
-   "in_list_view": 1,
-   "label": "Dyeing Charges Per Lbs"
+   "in_list_view": 0,
+   "label": "Dyeing Charges Per Lbs",
+   "hidden": 1
   },
   {
    "default": "0",
    "fieldname": "stitching_and_packing_charges_per_lbs",
    "fieldtype": "Currency",
-   "in_list_view": 1,
-   "label": "Stitching and Packing Charges Per Lbs"
+   "in_list_view": 0,
+   "label": "Stitching and Packing Charges Per Lbs",
+   "hidden": 1
   },
   {
    "default": "0",
    "fieldname": "trims_charges",
    "fieldtype": "Currency",
-   "in_list_view": 1,
-   "label": "Trims Charges"
+   "in_list_view": 0,
+   "label": "Trims Charges",
+   "hidden": 1
   }
  ],
  "index_web_pages_for_search": 1,

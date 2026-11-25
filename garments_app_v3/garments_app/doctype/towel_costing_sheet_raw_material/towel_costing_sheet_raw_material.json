@@ -13,7 +13,8 @@
   "ratio",
   "yarn_required_in_lbs",
   "bags_reqd",
-  "cost"
+  "cost",
+  "cost_per_pc"
  ],
  "fields": [
   {
@@ -78,8 +79,17 @@
    "fieldname": "cost",
    "fieldtype": "Float",
    "in_list_view": 1,
-   "label": "Cost",
+   "label": "Cost/LBS",
    "read_only": 1
+  },
+  {
+   "fieldname": "cost_per_pc",
+   "fieldtype": "Float",
+   "label": "Cost/Pcs",
+   "read_only": 1,
+   "in_list_view": 1,
+   "columns": 1,
+   "description": "= Cost/LBS x Yarn Required in (Lbs)"
   }
  ],
  "index_web_pages_for_search": 1,
