@@ -248,8 +248,8 @@ function calc_greige_weight(frm, cdt, cdn){
 	let dyeing_wastage_percent = flt(row.dyeing_wastage_percent)
 	let weaving_wastage_percent = flt(row.weaving_wastage_percet)
 
-	// greige weight = finish weight + (dyeing % + weaving %) of finish weight
-	let greige_weight = finish_weight * (1 + (dyeing_wastage_percent + weaving_wastage_percent) / 100)
+	// greige weight = finish weight + dyeing wastage %, then weaving wastage % added to that result
+	let greige_weight = finish_weight * (1 + dyeing_wastage_percent / 100) * (1 + weaving_wastage_percent / 100)
 	frappe.model.set_value(cdt, cdn, "greige_weight", greige_weight)
 
 	// greige weight expressed in grams - used as the common unit when
