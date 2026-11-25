@@ -300,7 +300,14 @@ frappe.ui.form.on("Towel Costing Sheet Raw Material", {
 function set_cost(frm, cdt, cdn){
 	var d = locals[cdt][cdn]
 	frappe.model.set_value(d.doctype, d.name, "cost", flt(d.price) * (flt(d.ratio) / 100))
+	set_cost_per_pc(d.doctype, d.name)
 	set_totals(frm)
+}
+
+// Cost/Pcs = Price x Yarn Required in (Lbs) (Ratio is already inside Yarn Required)
+function set_cost_per_pc(cdt, cdn){
+	let d = locals[cdt][cdn]
+	frappe.model.set_value(cdt, cdn, "cost_per_pc", flt(d.price) * flt(d.yarn_required_in_lbs))
 }
 
 function set_totals(frm){
