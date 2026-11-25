@@ -13,6 +13,7 @@
   "weaving_wastage_percet",
   "greige_weight",
   "greige_weight_grams",
+  "pcs_per_ctn",
   "weaving_charges_per_lbs",
   "dyeing_charges_per_lbs",
   "stitching_and_packing_charges_per_lbs",
@@ -109,6 +110,12 @@
    "in_list_view": 0,
    "label": "Trims Charges",
    "hidden": 1
+  },
+  {
+   "fieldname": "pcs_per_ctn",
+   "fieldtype": "Float",
+   "label": "Pcs / Ctn",
+   "description": "Pieces in one carton. The cost of Per Ctn trims is divided by this number to get their cost per piece."
   }
  ],
  "index_web_pages_for_search": 1,

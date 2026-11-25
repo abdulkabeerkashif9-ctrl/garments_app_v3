@@ -16,7 +16,8 @@
   "meters_per_default_uom",
   "gross_qty",
   "rate",
-  "amount"
+  "amount",
+  "amount_per_pc"
  ],
  "fields": [
   {
@@ -100,7 +101,7 @@
    "label": "Amount",
    "read_only": 1,
    "in_list_view": 1,
-   "description": "= Consumed Qty x Rate. Not in your original field list - added to support the Costing Total table's Trims Charges rollup. Flag if you'd rather compute that differently."
+   "description": "= Consumed Qty x Rate; when the Item has Meters per Default UOM (thread: 5000 m per Cone) the Consumed Qty in meters is first converted into default UOM units, so Amount = Consumed Qty / Meters per Default UOM x Rate."
   },
   {
    "fieldname": "color",
@@ -109,6 +110,14 @@
    "label": "Color",
    "in_list_view": 1,
    "description": "Leave empty for all colors. Fill it for a trim used only on that color, e.g. Thread Blue -> Blue."
+  },
+  {
+   "fieldname": "amount_per_pc",
+   "fieldtype": "Currency",
+   "label": "Amount/Pcs",
+   "read_only": 1,
+   "in_list_view": 1,
+   "description": "Cost of this trim in ONE piece: Per Ctn trims = Amount / Pcs per Ctn of the Finish Item (Article Details); every other trim = Amount."
   }
  ],
  "index_web_pages_for_search": 1,

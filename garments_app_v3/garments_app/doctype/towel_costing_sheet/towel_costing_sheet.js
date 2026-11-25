@@ -7,6 +7,7 @@ frappe.ui.form.on('Towel Costing Sheet', {
 		set_raw_material_item_query(frm)
 		set_trims_queries(frm)
 		clear_all_descriptions(frm)
+		if (frm.doc.docstatus === 0) { recalc_all_raw_material_rows(frm) }
 		sync_costing_total(frm)
 
 		if (frm.doc.docstatus === 1) {
@@ -219,6 +220,7 @@ frappe.ui.form.on('Towel Costing Sheet', {
 // Finish Item Towel Costing (child table): article / UOM / weight rows
 // ---------------------------------------------------------------------
 frappe.ui.form.on("Finish Item Towel Costing", {
+	pcs_per_ctn(frm){ schedule_costing_sync(frm) },
 	finish_weight(frm, cdt, cdn){
 		calc_greige_weight(frm, cdt, cdn)
 	},
@@ -475,7 +477,14 @@ function sync_costing_total(frm){
 	let trims_colored = {}
 	;(frm.doc.trims || []).forEach(t => {
 		if (!t.finish_item) { return }
-		let amount = flt(t.consumed_qty) * flt(t.rate)
+		// Amount (thread: meters -> cones) / Pcs per Ctn for Per Ctn trims
+		let meters = flt(t.meters_per_default_uom)
+		let amount = (meters ? flt(t.consumed_qty) / meters : flt(t.consumed_qty)) * flt(t.rate)
+		if ((t.consumption_unit || "") === "Per Ctn") {
+			let fr = (frm.doc.finish_item_towel_costing || []).find(r => r.article === t.finish_item)
+			let pcs = fr ? flt(fr.pcs_per_ctn) : 0
+			if (pcs > 0) { amount = amount / pcs }
+		}
 		if (t.color) {
 			let key = t.finish_item + "||" + (t.item_group || "")
 			;(trims_colored[key] = trims_colored[key] || {finish_item: t.finish_item, amounts: []}).amounts.push(amount)
@@ -492,7 +501,7 @@ function sync_costing_total(frm){
 	;(frm.doc.materials || []).forEach(m => {
 		if (m.item) {
 			yarn_by_item[m.item] = (yarn_by_item[m.item] || 0) + flt(m.cost)
-			yarn_pc_by_item[m.item] = (yarn_pc_by_item[m.item] || 0) + flt(m.cost) * flt(m.yarn_required_in_lbs)
+			yarn_pc_by_item[m.item] = (yarn_pc_by_item[m.item] || 0) + flt(m.price) * flt(m.yarn_required_in_lbs)
 		}
 	})
 

@@ -57,15 +57,37 @@ def greige_lbs_per_pc(finish_row):
 	return greige / 12 if finish_row.uom == "LBS/Dozen" else greige / 1000 * LBS_PER_KG
 
 
-def trims_charges_by_finish_item(trims):
+def trim_amount(row):
+	"""Cost of the trim's Consumed Qty. Rates are per default UOM (thread: per Cone) while thread is consumed in meters:
+	when the Item has Meters per Default UOM, Amount = Consumed Qty / Meters per Default UOM x Rate."""
+	meters = flt(row.get("meters_per_default_uom"))
+	if not meters and row.get("item_code"):
+		meters = flt(frappe.db.get_value("Item", row.item_code, "custom_meters_per_default_uom"))
+	qty = flt(row.consumed_qty) / meters if meters else flt(row.consumed_qty)
+	return qty * flt(row.rate)
+
+
+def amount_per_piece(row, pcs_per_ctn_by_finish_item):
+	"""Per Ctn trims: carton cost / Pcs per Ctn of the Finish Item; every other trim: its Amount."""
+	amount = flt(row.amount)
+	if (row.get("consumption_unit") or "").strip() == "Per Ctn":
+		pcs = flt(pcs_per_ctn_by_finish_item.get(row.finish_item))
+		if pcs > 0:
+			return amount / pcs
+	return amount
+
+
+def trims_charges_by_finish_item(trims, pcs_per_ctn_by_finish_item=None):
 	"""Trims Charges/Pcs per Finish Item. Trims without a Color are added up; trims with a Color (Thread Blue /
 	Green / ...) are alternatives of each other - only one color is on a piece - so each (Finish Item, Item Group) of
-	them counts once, at the average of its rows' Amounts (average rate x consumed qty)."""
+	them counts once, at the average of its rows' per-piece amounts."""
+	pcs_per_ctn_by_finish_item = pcs_per_ctn_by_finish_item or {}
 	plain, colored = {}, {}
 	for row in trims or []:
 		if not row.finish_item:
 			continue
-		amount = flt(row.amount)
+		amount = amount_per_piece(row, pcs_per_ctn_by_finish_item)
+		row.amount_per_pc = amount
 		if row.get("color"):
 			group = row.get("item_group") or (
 				frappe.db.get_value("Item", row.item_code, "item_group") if row.item_code else ""
@@ -85,15 +107,19 @@ def compute_costing_totals(doc, method=None):
 	for row in doc.get("trims") or []:
 		if row.item_code and not row.rate:
 			row.rate = get_most_recent_item_price(row.item_code) or 0
-		row.amount = flt(row.consumed_qty) * flt(row.rate)
-	trims_by_finish_item = trims_charges_by_finish_item(doc.get("trims"))
+		row.amount = trim_amount(row)
+	pcs_per_ctn = {}
+	for r in doc.get("finish_item_towel_costing") or []:
+		if r.article and r.article not in pcs_per_ctn:
+			pcs_per_ctn[r.article] = flt(r.get("pcs_per_ctn"))
+	trims_by_finish_item = trims_charges_by_finish_item(doc.get("trims"), pcs_per_ctn)
 
 	# --- Yarn Cost/LBS and Cost/Pcs per Finish Item, from the Raw Materials table.
 	yarn_rate_by_finish_item, yarn_pc_by_finish_item = {}, {}
 	for row in doc.get("materials") or []:
 		if not row.item:
 			continue
-		row.cost_per_pc = flt(row.cost) * flt(row.yarn_required_in_lbs)
+		row.cost_per_pc = flt(row.price) * flt(row.yarn_required_in_lbs)   # Ratio is already inside Yarn Required
 		yarn_rate_by_finish_item[row.item] = yarn_rate_by_finish_item.get(row.item, 0) + flt(row.cost)
 		yarn_pc_by_finish_item[row.item] = yarn_pc_by_finish_item.get(row.item, 0) + flt(row.cost_per_pc)
 

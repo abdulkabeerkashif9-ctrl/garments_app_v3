@@ -89,7 +89,7 @@
    "read_only": 1,
    "in_list_view": 1,
    "columns": 1,
-   "description": "= Cost/LBS x Yarn Required in (Lbs)"
+   "description": "= Price x Yarn Required in (Lbs) - cost of this yarn in one piece (Ratio is already inside Yarn Required)."
   }
  ],
  "index_web_pages_for_search": 1,

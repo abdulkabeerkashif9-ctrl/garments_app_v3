@@ -22,7 +22,7 @@ frappe.ui.form.on("Towel Costing Sheet Trim", {
 		// meters_per_default_uom is fetch_from item_code.custom_meters_per_default_uom -
 		// frappe applies the fetch itself, but Gross Qty needs to react to it too;
 		// give the fetch a tick to land, then recalc.
-		setTimeout(() => recalc_gross_qty(frm, cdt, cdn), 300);
+		setTimeout(() => { recalc_amount(frm, cdt, cdn); recalc_gross_qty(frm, cdt, cdn); }, 300);
 	},
 	consumed_qty(frm, cdt, cdn) {
 		recalc_amount(frm, cdt, cdn);
@@ -32,6 +32,7 @@ frappe.ui.form.on("Towel Costing Sheet Trim", {
 		recalc_gross_qty(frm, cdt, cdn);
 	},
 	meters_per_default_uom(frm, cdt, cdn) {
+		recalc_amount(frm, cdt, cdn);
 		recalc_gross_qty(frm, cdt, cdn);
 	},
 	rate(frm, cdt, cdn) {
@@ -41,7 +42,10 @@ frappe.ui.form.on("Towel Costing Sheet Trim", {
 
 function recalc_amount(frm, cdt, cdn) {
 	let row = locals[cdt][cdn];
-	frappe.model.set_value(cdt, cdn, "amount", flt(row.consumed_qty) * flt(row.rate));
+	// the rate is per default UOM (thread: per Cone) and thread is consumed in meters
+	let meters = flt(row.meters_per_default_uom);
+	let qty = meters ? flt(row.consumed_qty) / meters : flt(row.consumed_qty);
+	frappe.model.set_value(cdt, cdn, "amount", qty * flt(row.rate));
 }
 
 // Gross Qty - live preview only, server recomputes authoritatively in
