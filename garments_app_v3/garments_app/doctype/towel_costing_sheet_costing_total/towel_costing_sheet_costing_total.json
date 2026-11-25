@@ -17,6 +17,7 @@
   "wastage_total_percent",
   "stitching_charges",
   "cutting_charges",
+  "packing_charges",
   "trims_charges",
   "total_cost"
  ],
@@ -91,7 +92,7 @@
    "label": "Total Cost/Pcs",
    "read_only": 1,
    "in_list_view": 1,
-   "description": "= Yarn Cost/Pcs + Dyeing/Pcs + Weaving/Pcs + Wastage Amount/Pcs + Stitching/Pcs + Cutting/Pcs + Trims/Pcs."
+   "description": "= Yarn Cost/Pcs + Dyeing/Pcs + Weaving/Pcs + Wastage Amount/Pcs + Stitching/Pcs + Cutting/Pcs + Packing/Pcs + Trims/Pcs."
   },
   {
    "fieldname": "yarn_cost_per_pc",
@@ -123,6 +124,13 @@
    "label": "Cutting Charges/Pcs",
    "in_list_view": 1,
    "description": "Type the cutting charge per piece."
+  },
+  {
+   "fieldname": "packing_charges",
+   "fieldtype": "Currency",
+   "label": "Packing Charges/Pcs",
+   "in_list_view": 1,
+   "description": "Type the packing charge per piece."
   }
  ],
  "index_web_pages_for_search": 1,

@@ -117,7 +117,7 @@
    "label": "Amount/Pcs",
    "read_only": 1,
    "in_list_view": 1,
-   "description": "Cost of this trim in ONE piece: Per Ctn trims = Amount / Pcs per Ctn of the Finish Item (Article Details); every other trim = Amount."
+   "description": "Cost of this trim in ONE piece: Per Ctn trims = Amount / Pcs per Ctn, Per Pack trims = Amount / Pcs per Pack (Article Details); every other trim = Amount."
   }
  ],
  "index_web_pages_for_search": 1,

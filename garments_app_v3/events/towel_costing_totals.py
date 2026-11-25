@@ -75,26 +75,28 @@ def trim_amount(row):
 	return qty * flt(row.rate)
 
 
-def amount_per_piece(row, pcs_per_ctn_by_finish_item):
-	"""Per Ctn trims: carton cost / Pcs per Ctn of the Finish Item; every other trim: its Amount."""
+def amount_per_piece(row, divisors):
+	"""Per Ctn trims: carton cost / Pcs per Ctn of the Finish Item; Per Pack trims: pack cost / Pcs per Pack; every
+	other trim: its Amount. `divisors` = {Finish Item: {"Per Ctn": pcs per ctn, "Per Pack": pcs per pack}}."""
 	amount = flt(row.amount)
-	if (row.get("consumption_unit") or "").strip() == "Per Ctn":
-		pcs = flt(pcs_per_ctn_by_finish_item.get(row.finish_item))
+	unit = (row.get("consumption_unit") or "").strip()
+	if unit in ("Per Ctn", "Per Pack"):
+		pcs = flt((divisors.get(row.finish_item) or {}).get(unit))
 		if pcs > 0:
 			return amount / pcs
 	return amount
 
 
-def trims_charges_by_finish_item(trims, pcs_per_ctn_by_finish_item=None):
+def trims_charges_by_finish_item(trims, divisors=None):
 	"""Trims Charges/Pcs per Finish Item. Trims without a Color are added up; trims with a Color (Thread Blue /
 	Green / ...) are alternatives of each other - only one color is on a piece - so each (Finish Item, Item Group) of
 	them counts once, at the average of its rows' per-piece amounts."""
-	pcs_per_ctn_by_finish_item = pcs_per_ctn_by_finish_item or {}
+	divisors = divisors or {}
 	plain, colored = {}, {}
 	for row in trims or []:
 		if not row.finish_item:
 			continue
-		amount = amount_per_piece(row, pcs_per_ctn_by_finish_item)
+		amount = amount_per_piece(row, divisors)
 		row.amount_per_pc = amount
 		if row.get("color"):
 			group = row.get("item_group") or (
@@ -116,11 +118,11 @@ def compute_costing_totals(doc, method=None):
 		if row.item_code and not row.rate:
 			row.rate = get_most_recent_item_price(row.item_code) or 0
 		row.amount = trim_amount(row)
-	pcs_per_ctn = {}
+	divisors = {}
 	for r in doc.get("finish_item_towel_costing") or []:
-		if r.article and r.article not in pcs_per_ctn:
-			pcs_per_ctn[r.article] = flt(r.get("pcs_per_ctn"))
-	trims_by_finish_item = trims_charges_by_finish_item(doc.get("trims"), pcs_per_ctn)
+		if r.article and r.article not in divisors:
+			divisors[r.article] = {"Per Ctn": flt(r.get("pcs_per_ctn")), "Per Pack": flt(r.get("pcs_per_pack"))}
+	trims_by_finish_item = trims_charges_by_finish_item(doc.get("trims"), divisors)
 
 	# --- first row per Finish Item (Article) of the Finish Item table: wastage %, weights
 	finish_rows = {}
@@ -166,6 +168,7 @@ def compute_costing_totals(doc, method=None):
 			+ wastage_amount
 			+ flt(row.stitching_charges)
 			+ flt(row.cutting_charges)
+			+ flt(row.packing_charges)
 			+ row.trims_charges
 		)
 

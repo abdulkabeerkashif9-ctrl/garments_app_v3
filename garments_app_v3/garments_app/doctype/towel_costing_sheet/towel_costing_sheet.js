@@ -221,6 +221,7 @@ frappe.ui.form.on('Towel Costing Sheet', {
 // ---------------------------------------------------------------------
 frappe.ui.form.on("Finish Item Towel Costing", {
 	pcs_per_ctn(frm){ schedule_costing_sync(frm) },
+	pcs_per_pack(frm){ schedule_costing_sync(frm) },
 	finish_weight(frm, cdt, cdn){
 		calc_greige_weight(frm, cdt, cdn)
 	},
@@ -484,12 +485,13 @@ function sync_costing_total(frm){
 	let trims_colored = {}
 	;(frm.doc.trims || []).forEach(t => {
 		if (!t.finish_item) { return }
-		// Amount (thread: meters -> cones) / Pcs per Ctn for Per Ctn trims
+		// Amount (thread: meters -> cones) / Pcs per Ctn (Per Ctn trims) or / Pcs per Pack (Per Pack trims)
 		let meters = flt(t.meters_per_default_uom)
 		let amount = (meters ? flt(t.consumed_qty) / meters : flt(t.consumed_qty)) * flt(t.rate)
-		if ((t.consumption_unit || "") === "Per Ctn") {
+		let unit = t.consumption_unit || ""
+		if (unit === "Per Ctn" || unit === "Per Pack") {
 			let fr = (frm.doc.finish_item_towel_costing || []).find(r => r.article === t.finish_item)
-			let pcs = fr ? flt(fr.pcs_per_ctn) : 0
+			let pcs = fr ? flt(unit === "Per Ctn" ? fr.pcs_per_ctn : fr.pcs_per_pack) : 0
 			if (pcs > 0) { amount = amount / pcs }
 		}
 		if (t.color) {
@@ -532,7 +534,7 @@ function sync_costing_total(frm){
 			trims_charges: trims_charges,
 			wastage_total_percent: wastage_total_percent,
 			wastage_amount: wastage_amount,
-			total_cost: yarn_pc + dyeing_pc + weaving_pc + wastage_amount + flt(row.stitching_charges) + flt(row.cutting_charges) + trims_charges
+			total_cost: yarn_pc + dyeing_pc + weaving_pc + wastage_amount + flt(row.stitching_charges) + flt(row.cutting_charges) + flt(row.packing_charges) + trims_charges
 		}
 		Object.keys(values).forEach(key => {
 			if (Math.abs(flt(row[key]) - values[key]) > 0.000001) {
@@ -564,7 +566,8 @@ frappe.ui.form.on("Towel Costing Sheet Costing Total", {
 	dyeing_charges(frm){ schedule_costing_sync(frm) },
 	weaving_charges(frm){ schedule_costing_sync(frm) },
 	stitching_charges(frm){ schedule_costing_sync(frm) },
-	cutting_charges(frm){ schedule_costing_sync(frm) }
+	cutting_charges(frm){ schedule_costing_sync(frm) },
+	packing_charges(frm){ schedule_costing_sync(frm) }
 })
 
 frappe.ui.form.on("Towel Costing Sheet Trim", {
